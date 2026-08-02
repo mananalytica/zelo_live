@@ -55,6 +55,11 @@ try:
 except ImportError:
     DUCKDB_AVAILABLE = False
 
+# Vercel's Python functions run in a read-only filesystem with no $HOME set.
+# DuckDB needs a writable home directory to install/load the MotherDuck
+# extension, so point it at /tmp — the one writable path available there.
+os.environ.setdefault("HOME", "/tmp")
+
 MOTHERDUCK_TOKEN = os.environ.get("MOTHERDUCK_TOKEN", "")
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
 MD_DATABASE = os.environ.get("MD_DATABASE", "zelo")
@@ -76,7 +81,7 @@ def get_connection():
     # Connect to the account (no database in the connection string yet) so we can
     # create the target database if it doesn't exist — MotherDuck will NOT do this
     # automatically just because you named it in the connection string.
-    con = duckdb.connect(f"md:?motherduck_token={MOTHERDUCK_TOKEN}")
+    con = duckdb.connect(f"md:?motherduck_token={MOTHERDUCK_TOKEN}", config={"home_directory": "/tmp"})
     con.execute(f"CREATE DATABASE IF NOT EXISTS {MD_DATABASE}")
     con.execute(f"USE {MD_DATABASE}")
     if not _bootstrapped:
