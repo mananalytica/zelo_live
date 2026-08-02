@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book Your Fitting Today — Zelo Tailoring</title>
+<meta name="description" content="Book a free fitting with a Zelo tailor — in-studio in Lahore or by video, anywhere.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Limited Slots This Week</span>
+    <h1>Your first fitting is free.<br>Book it in 30 seconds.</h1>
+    <p class="lead">In-studio in Lahore, or over video call — a Zelo tailor walks you through your measurements and what we'd recommend for your first made-to-measure piece.</p>
+  </section>
+  <section class="container section-tight" style="max-width:480px">
+    <div class="card">
+      <form onsubmit="event.preventDefault(); Zelo.showToast('Request received','We\'ll call you within the hour to confirm.'); this.reset();">
+        <div class="field"><label>Full Name</label><input class="input" type="text" required></div>
+        <div class="field"><label>Phone Number</label><input class="input mono" type="tel" placeholder="03XX-XXXXXXX" required></div>
+        <button class="btn btn-primary btn-block btn-lg" type="submit">Claim My Free Fitting</button>
+      </form>
+    </div>
+    <div class="grid grid-3" style="margin-top:32px">
+      <div class="stat-block"><div class="num">15</div><div class="lbl">Min Fitting</div></div>
+      <div class="stat-block"><div class="num">2–3</div><div class="lbl">Day Turnaround</div></div>
+      <div class="stat-block"><div class="num">100%</div><div class="lbl">Fit Guarantee</div></div>
+    </div>
+  </section>
+  
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>

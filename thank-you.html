@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order Confirmed — Zelo</title>
+<meta name="description" content="Your order has been placed.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Order Confirmed</span>
+    <h1>Thank you — it's on its way.</h1>
+    <p class="lead" id="ty-lead">We'll call to confirm your delivery window shortly.</p>
+  </section>
+  <section class="container section-tight" style="max-width:520px">
+    <div class="card text-center">
+      <p style="font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-soft);margin-bottom:4px">Order Reference</p>
+      <p class="order-ref" id="ty-ref" style="font-size:20px;color:var(--navy);font-weight:600">—</p>
+      <hr class="seam">
+      <div id="ty-items" style="text-align:left"></div>
+      <hr class="seam seam-tight">
+      <div class="flex-between"><strong>Total</strong><span class="price" id="ty-total" style="font-size:18px">Rs 0</span></div>
+    </div>
+    <div class="flex gap-md" style="justify-content:center;margin-top:24px">
+      <a href="shop.html" class="btn btn-outline">Continue Shopping</a>
+      <a href="live-sell.html" class="btn btn-primary">Watch Live Sell</a>
+    </div>
+  </section>
+  <script>
+    const raw = sessionStorage.getItem('zelo_last_order');
+    if (raw) {
+      const order = JSON.parse(raw);
+      document.getElementById('ty-ref').textContent = order.ref;
+      document.getElementById('ty-items').innerHTML = order.cart.map(i => `
+        <div class="flex-between" style="margin-bottom:8px;font-size:13.5px">
+          <span>${i.name} <span class="order-ref">×${i.qty}</span></span>
+          <span class="price mono">Rs ${(i.price*i.qty).toLocaleString()}</span>
+        </div>`).join('');
+      document.getElementById('ty-total').textContent = 'Rs ' + order.total.toLocaleString();
+    } else {
+      document.getElementById('ty-ref').textContent = 'No recent order found';
+    }
+  </script>
+
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>

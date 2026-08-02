@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zelo — Made-to-Measure Tailoring, Ready-to-Wear &amp; Live Sell</title>
+<meta name="description" content="Zelo is a Lahore tailoring studio: book a fitting for made-to-measure pieces, shop ready-to-wear, or catch genuine export-leftover stock live.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .hero { padding: 68px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: clamp(32px, 5vw, 50px); }
+  .hero-visual { border-radius: var(--radius-card); overflow: hidden; border: 1.5px solid var(--border); aspect-ratio: 4/3; }
+  .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+  .pillar-card { padding: 26px; }
+  .pillar-card .icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 14px; }
+  .live-strip { background: var(--navy); border-radius: var(--radius-card); padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; color: #fff; }
+  @media (max-width: 700px) { .live-strip { grid-template-columns: 1fr; text-align: center; } }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+
+<main>
+  <section class="hero container">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Tailoring · Ready-to-Wear · Live Sell</span>
+        <h1>Clothes cut to<br>how you actually live.</h1>
+        <p class="lead" style="max-width:460px">Book a fitting for something made to your measurements, shop what's already on the rack, or catch genuine export-leftover pieces live — all from one studio in Lahore.</p>
+        <div class="flex gap-md" style="margin-top:22px;flex-wrap:wrap">
+          <a href="booking.html" class="btn btn-primary btn-lg">Book a Fitting</a>
+          <a href="live-sell.html" class="btn btn-navy btn-lg">Watch Live Sell</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&h=600&fit=crop&q=80" alt="Tailoring studio">
+      </div>
+    </div>
+  </section>
+
+  <hr class="seam-rule container">
+
+  <section class="section container">
+    <div class="text-center" style="margin-bottom:32px">
+      <span class="eyebrow">Three Ways to Shop</span>
+      <h2>Pick your pace.</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card pillar-card">
+        <div class="icon" style="background:rgba(74,147,232,0.12);color:var(--blue-deep)">✂️</div>
+        <h3>Made to Measure</h3>
+        <p>Save your measurements once, then order tailoring or design-studio pieces built exactly to them.</p>
+        <a href="measurements.html" class="btn btn-outline btn-sm">Add Measurements</a>
+      </div>
+      <div class="card pillar-card">
+        <div class="icon" style="background:var(--blush);color:#7a3d36">🧵</div>
+        <h3>Ready to Wear</h3>
+        <p>Full-stock, full-price pieces cut from the same fabric and pattern library as our tailoring line.</p>
+        <a href="shop.html" class="btn btn-outline btn-sm">Browse the Shop</a>
+      </div>
+      <div class="card pillar-card">
+        <div class="icon" style="background:rgba(31,42,61,0.08);color:var(--navy)">📡</div>
+        <h3>Live Sell</h3>
+        <p>Genuine export-leftover pieces from Zainab Export, sold live with cash on delivery in Lahore.</p>
+        <a href="live-sell.html" class="btn btn-outline btn-sm">Watch Now</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container section-tight">
+    <div class="live-strip">
+      <div>
+        <span class="badge" style="background:rgba(255,255,255,0.12);color:var(--blush)">● Live Now</span>
+        <h3 style="color:#fff;margin:10px 0 4px">Warehouse Floor — Export Leftover Sorting</h3>
+        <p style="color:rgba(255,255,255,0.65);margin:0">1,200+ watching · up to 70% off genuine export stock</p>
+      </div>
+      <a href="live-sell.html" class="btn btn-primary btn-lg">Join the Live</a>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="text-center" style="margin-bottom:32px">
+      <span class="eyebrow">Journal</span>
+      <h2>From the studio floor.</h2>
+    </div>
+    <div class="grid grid-2">
+      <a href="blog-behind-the-seams.html" class="card card-interactive">
+        <span class="badge badge-blue">Craft</span>
+        <h3 style="margin-top:12px">Behind the Seams</h3>
+        <p>How a single made-to-measure order moves from fabric bolt to finished garment.</p>
+      </a>
+      <a href="blog-eid-collection-story.html" class="card card-interactive">
+        <span class="badge badge-blush">Collection</span>
+        <h3 style="margin-top:12px">The Eid Collection Story</h3>
+        <p>Why this year's Eid pieces lean on hand embroidery, sourced metre by metre.</p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+</body>
+</html>

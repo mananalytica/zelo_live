@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Measurement Guide — Zelo</title>
+<meta name="description" content="How to take your measurements at home, and save them to your account for every made-to-measure order.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Made to Measure</span>
+    <h1>Five measurements.<br>One perfect fit, every time.</h1>
+    <p class="lead">Save these once and every future order — ready-to-wear, design studio, or live-sell — is checked against them automatically.</p>
+  </section>
+  <section class="container section-tight" style="max-width:640px">
+    <div class="card">
+      <form onsubmit="event.preventDefault(); Zelo.showToast('Measurements saved','They will apply to your next order automatically.')">
+        <div class="grid grid-2">
+          <div class="field"><label>Chest (in)</label><input class="input mono" type="number" step="0.25" placeholder="38"></div>
+          <div class="field"><label>Waist (in)</label><input class="input mono" type="number" step="0.25" placeholder="32"></div>
+          <div class="field"><label>Hip (in)</label><input class="input mono" type="number" step="0.25" placeholder="40"></div>
+          <div class="field"><label>Shoulder (in)</label><input class="input mono" type="number" step="0.25" placeholder="17.5"></div>
+          <div class="field"><label>Sleeve Length (in)</label><input class="input mono" type="number" step="0.25" placeholder="24"></div>
+          <div class="field"><label>Height (in)</label><input class="input mono" type="number" step="0.25" placeholder="68"></div>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Save Measurements</button>
+      </form>
+    </div>
+    <hr class="seam">
+    <div class="card">
+      <h3>Not sure how to measure?</h3>
+      <p>Book a free 10-minute video fitting and our tailor will walk you through each measurement, live.</p>
+      <a href="booking.html" class="btn btn-outline">Book a Video Fitting</a>
+    </div>
+  </section>
+  
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>

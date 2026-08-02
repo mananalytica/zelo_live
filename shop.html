@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop — Zelo</title>
+<meta name="description" content="Ready-to-wear pieces from Zelo — full price, full stock, made from the same fabric as our tailoring line.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Ready to Wear</span>
+    <h1>Off the rack.<br>Cut from the same cloth.</h1>
+    <p class="lead">Full-stock, full-price pieces built from the same fabric and pattern library as our made-to-measure line. Looking for clearance stock instead? Visit <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell</a>.</p>
+  </section>
+  <section class="container section-tight">
+    <div class="pill-tab" style="margin-bottom:24px">
+      <button class="active">All</button><button>Menswear</button><button>Womenswear</button><button>Kids</button><button>Accessories</button>
+    </div>
+    <div class="grid grid-4" id="shop-grid"></div>
+  </section>
+  <script>
+    document.getElementById('shop-grid').innerHTML = ZELO_PRODUCTS.map(p => `
+      <div class="card card-flush card-interactive">
+        <a href="product.html?id=${p.id}"><img src="${p.img}" style="aspect-ratio:4/5;object-fit:cover;width:100%"></a>
+        <div style="padding:16px">
+          <span class="badge badge-blue">${p.cat}</span>
+          <h4 style="margin:10px 0 6px;font-size:15px"><a href="product.html?id=${p.id}">${p.name}</a></h4>
+          <div class="flex-between">
+            <span class="price">Rs ${p.price.toLocaleString()}</span>
+            <button class="btn btn-outline btn-sm" onclick="zeloAddToCart('${p.id}')">Add</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  </script>
+  
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+<script>
+  const ZELO_PRODUCTS = [
+    { id:'z1', name:'Charcoal Wool-Blend Overcoat', price:14500, img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
+    { id:'z2', name:'Winter Cotton Kurta', price:5500, img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
+    { id:'z3', name:'Unstitched Lawn — 3 Piece', price:8200, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
+    { id:'z4', name:'Dark Wash Denim Jacket', price:9800, img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
+    { id:'z5', name:'Kids Fleece Hoodie', price:4800, img:'https://images.unsplash.com/photo-1603252109303-27514432f5c3?w=500&h=600&fit=crop&q=80', cat:'Kids' },
+    { id:'z6', name:'Genuine Leather Belt', price:12000, img:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=500&h=600&fit=crop&q=80', cat:'Accessories' }
+  ];
+  function zeloAddToCart(id) {
+    const p = ZELO_PRODUCTS.find(x => x.id === id);
+    if (!p) return;
+    const cart = Zelo.getCart();
+    const existing = cart.find(i => i.id === id);
+    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: p.price, img: p.img, qty: 1 });
+    Zelo.setCart(cart);
+    Zelo.showToast('Added to Cart', p.name);
+  }
+</script>
+
+</body>
+</html>

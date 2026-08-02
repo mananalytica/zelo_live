@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Zelo</title>
+<meta name="description" content="Get in touch with the Zelo team.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Contact</span>
+    <h1>Say hello.</h1>
+    <p class="lead">Questions about an order, a live-sell lot, or a bespoke piece — we usually reply within a few hours.</p>
+  </section>
+  <section class="container section-tight">
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <form onsubmit="event.preventDefault(); Zelo.showToast('Message sent','We\'ll get back to you shortly.'); this.reset();">
+          <div class="field"><label>Name</label><input class="input" type="text" required></div>
+          <div class="field"><label>Email or Phone</label><input class="input" type="text" required></div>
+          <div class="field"><label>Message</label><textarea class="input" rows="5" required></textarea></div>
+          <button class="btn btn-primary btn-block" type="submit">Send Message</button>
+        </form>
+      </div>
+      <div class="flex-col gap-lg">
+        <div class="card">
+          <h3>Studio</h3>
+          <p>Gulberg Industrial Area, Lahore<br>Open Mon–Sat, 11am–8pm</p>
+        </div>
+        <div class="card">
+          <h3>Direct</h3>
+          <p class="mono" style="color:var(--navy)">+92 300 1234567<br>hello@zelo.pk</p>
+        </div>
+        <div class="card">
+          <h3>Live Sell Questions</h3>
+          <p>Message us on the live chat during any stream, or WhatsApp us directly from the <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell page</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>

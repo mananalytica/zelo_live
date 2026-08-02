@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Zelo</title>
+<meta name="description" content="Site administration.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container">
+    <span class="eyebrow">Restricted</span>
+    <h1>Site Admin</h1>
+    <p class="lead">General site administration lives here. Live-sell inventory, pricing, and stock are managed from the dedicated panel inside the Live Sell page.</p>
+    <div class="flex gap-md" style="justify-content:center;margin-top:20px">
+      <a href="live-sell.html#admin" class="btn btn-primary">Open Live Sell Admin</a>
+      <a href="index.html" class="btn btn-outline">Back to Site</a>
+    </div>
+  </section>
+  <section class="container" style="max-width:420px;padding-bottom:64px">
+    <div class="card">
+      <form onsubmit="event.preventDefault(); Zelo.showToast('Admin', 'Connect this form to your real auth before launch.')">
+        <div class="field"><label>Username</label><input class="input" type="text" placeholder="admin"></div>
+        <div class="field"><label>Password</label><input class="input" type="password" placeholder="********"></div>
+        <button class="btn btn-navy btn-block" type="submit">Sign In</button>
+      </form>
+    </div>
+  </section>
+  
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>

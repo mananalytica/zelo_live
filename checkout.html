@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Zelo</title>
+<meta name="description" content="Review your order and place it with Cash on Delivery.">
+<link rel="icon" href="assets/logo-original-square.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+
+  <section class="page-hero container" style="padding-bottom:16px">
+    <span class="eyebrow">Checkout</span>
+    <h1>Almost there.</h1>
+  </section>
+  <section class="container section-tight">
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <h3>Delivery Details</h3>
+        <form id="checkout-form" onsubmit="return submitOrder(event)">
+          <div class="field"><label>Full Name</label><input class="input" id="c-name" type="text" required></div>
+          <div class="field"><label>Phone Number</label><input class="input mono" id="c-phone" type="tel" placeholder="03XX-XXXXXXX" required></div>
+          <div class="field"><label>Delivery Address</label><textarea class="input" id="c-address" rows="3" required></textarea></div>
+          <div class="field"><label>City</label>
+            <select class="input" id="c-city"><option>Lahore</option><option>Karachi</option><option>Islamabad</option><option>Other</option></select>
+          </div>
+          <div class="field"><label>Payment</label>
+            <select class="input" id="c-payment"><option>Cash on Delivery</option><option>Bank Transfer</option></select>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" type="submit">Place Order</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Order Summary</h3>
+        <div id="cart-summary"></div>
+        <hr class="seam seam-tight">
+        <div class="flex-between"><span>Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
+        <div class="flex-between" style="margin-top:6px"><span>Delivery</span><span class="price mono">Rs 0</span></div>
+        <hr class="seam seam-tight">
+        <div class="flex-between"><strong>Total</strong><span class="price mono" id="c-total" style="font-size:18px">Rs 0</span></div>
+      </div>
+    </div>
+  </section>
+  <script>
+    function renderCartSummary() {
+      const cart = Zelo.getCart();
+      const mount = document.getElementById('cart-summary');
+      if (!cart.length) {
+        mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="shop.html" style="color:var(--blue-deep);font-weight:700">Browse the shop</a> or check out the current <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell</a>.</p>';
+        document.getElementById('c-subtotal').textContent = 'Rs 0';
+        document.getElementById('c-total').textContent = 'Rs 0';
+        return;
+      }
+      mount.innerHTML = cart.map(i => `
+        <div class="flex-between" style="margin-bottom:10px">
+          <span style="font-size:13.5px">${i.name} <span class="order-ref">×${i.qty}</span></span>
+          <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
+        </div>`).join('');
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById('c-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
+      document.getElementById('c-total').textContent = 'Rs ' + subtotal.toLocaleString();
+    }
+    function submitOrder(e) {
+      e.preventDefault();
+      const cart = Zelo.getCart();
+      if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
+      const ref = 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      sessionStorage.setItem('zelo_last_order', JSON.stringify({ ref, cart, total: cart.reduce((s,i)=>s+i.price*i.qty,0) }));
+      Zelo.setCart([]);
+      window.location.href = 'thank-you.html';
+      return false;
+    }
+    renderCartSummary();
+  </script>
+
+</main>
+<div id="site-footer"></div>
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
+</body>
+</html>
