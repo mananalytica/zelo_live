@@ -58,18 +58,31 @@ except ImportError:
 MOTHERDUCK_TOKEN = os.environ.get("MOTHERDUCK_TOKEN", "")
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "")
 MD_DATABASE = os.environ.get("MD_DATABASE", "zelo")
+if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", MD_DATABASE):
+    raise RuntimeError("MD_DATABASE must be a plain identifier (letters, numbers, underscore).")
 
 PRODUCT_ID_RE = re.compile(r"^/api/products/([A-Za-z0-9_-]+)$")
 LIVE_FEED_ROUTE = "/api/live-feeds"
 
+_bootstrapped = False  # per-process cache so we don't re-run CREATE TABLE on every request
+
 
 def get_connection():
+    global _bootstrapped
     if not DUCKDB_AVAILABLE:
         raise RuntimeError("duckdb package is not installed. Add 'duckdb' to requirements.txt.")
     if not MOTHERDUCK_TOKEN:
         raise RuntimeError("MOTHERDUCK_TOKEN is not set. Add it in your host's environment variables.")
-    con = duckdb.connect(f"md:{MD_DATABASE}?motherduck_token={MOTHERDUCK_TOKEN}")
-    bootstrap(con)
+    # Connect to the account (no database in the connection string yet) so we can
+    # create the target database if it doesn't exist — MotherDuck will NOT do this
+    # automatically just because you named it in the connection string.
+    con = duckdb.connect(f"md:?motherduck_token={MOTHERDUCK_TOKEN}")
+    con.execute(f"CREATE DATABASE IF NOT EXISTS {MD_DATABASE}")
+    con.execute(f"USE {MD_DATABASE}")
+    if not _bootstrapped:
+        bootstrap(con)
+        _bootstrapped = True
+
     return con
 
 
@@ -187,7 +200,19 @@ class handler(BaseHTTPRequestHandler):
         path = self.path.split("?")[0]
         try:
             if path == "/api/health":
-                self._send(200, {"status": "ok", "duckdb_available": DUCKDB_AVAILABLE, "motherduck_configured": bool(MOTHERDUCK_TOKEN)})
+                info = {"duckdb_available": DUCKDB_AVAILABLE, "motherduck_token_set": bool(MOTHERDUCK_TOKEN), "database": MD_DATABASE}
+                try:
+                    con = get_connection()
+                    tables = [r[0] for r in con.execute("SHOW TABLES").fetchall()]
+                    info["status"] = "ok"
+                    info["connected"] = True
+                    info["tables"] = tables
+                    self._send(200, info)
+                except Exception as e:
+                    info["status"] = "error"
+                    info["connected"] = False
+                    info["error"] = str(e)
+                    self._send(200, info)
                 return
             if path == "/api/products":
                 con = get_connection()
