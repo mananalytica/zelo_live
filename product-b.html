@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Product — Zelo</title>
-<meta name="description" content="Product detail page.">
+<meta name="description" content="Product detail page (A/B variant B).">
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,34 +12,34 @@
 <div id="site-header"></div>
 <main>
 
+  <!-- Variant B — condensed layout, sticky buy bar, urgency framing -->
   <section class="container section-tight">
     <div class="grid grid-2" id="product-mount" style="align-items:start"></div>
   </section>
+  <div class="card" id="sticky-buy" style="position:sticky;bottom:12px;max-width:520px;margin:0 auto;display:flex;gap:12px;align-items:center;padding:14px 18px">
+    <div style="flex:1">
+      <div class="price" id="sticky-price" style="font-size:16px"></div>
+      <div style="font-size:11px;color:var(--ink-faint)">Only a few left at this price</div>
+    </div>
+    <button class="btn btn-primary" onclick="zeloAddToCart(p.id)">Add to Cart</button>
+  </div>
   <script>
     const params = new URLSearchParams(window.location.search);
     const pid = params.get('id') || ZELO_PRODUCTS[0].id;
     const p = ZELO_PRODUCTS.find(x => x.id === pid) || ZELO_PRODUCTS[0];
-    document.title = p.name + ' — Zelo';
+    document.title = p.name + ' — Zelo (Variant B)';
+    document.getElementById('sticky-price').textContent = 'Rs ' + p.price.toLocaleString();
     document.getElementById('product-mount').innerHTML = `
       <div class="card card-flush"><img src="${p.img}" style="aspect-ratio:4/5;object-fit:cover;width:100%"></div>
       <div>
-        <span class="badge badge-blue">${p.cat}</span>
+        <span class="badge badge-danger">Selling Fast</span>
         <h1 style="margin:14px 0 8px">${p.name}</h1>
-        <div class="price" style="font-size:26px;margin-bottom:14px">Rs ${p.price.toLocaleString()}</div>
-        <p>Cut from the same fabric library as our made-to-measure line. Available in standard sizing, or request a made-to-measure version from the Design Studio.</p>
-        <hr class="seam seam-tight">
+        <div class="price" style="font-size:26px;margin-bottom:6px">Rs ${p.price.toLocaleString()}</div>
+        <p style="font-size:13px;color:var(--ink-faint);margin-bottom:14px">Free delivery on orders above Rs 5,000 · Same-day in Lahore</p>
         <div class="field"><label>Size</label>
           <select class="input" id="pdp-size"><option>S</option><option>M</option><option selected>L</option><option>XL</option></select>
         </div>
-        <div class="flex gap-md" style="margin-top:8px">
-          <button class="btn btn-navy btn-block" onclick="zeloAddToCart(p.id)">Add to Cart</button>
-          <a href="checkout.html" class="btn btn-primary btn-block">Buy Now</a>
-        </div>
-        <div class="flex gap-sm" style="margin-top:16px;flex-wrap:wrap">
-          <span class="badge badge-success">Genuine Fabric</span>
-          <span class="badge badge-blue">Same Day — Lahore</span>
-          <span class="badge badge-blush">Cash on Delivery</span>
-        </div>
+        <button class="btn btn-navy btn-block btn-lg" onclick="zeloAddToCart(p.id)">Add to Cart — Rs ${p.price.toLocaleString()}</button>
       </div>`;
   </script>
 

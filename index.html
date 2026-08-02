@@ -1,207 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tifl Little Wear — Kidswear Marketplace &amp; Live Sales, Lahore</title>
-<meta name="description" content="Shop kidswear at Tifl Little Wear, Lahore — browse the catalogue anytime or catch our live sales for one-tap buying while you watch.">
-<link rel="canonical" href="https://www.tifllittlewear.com/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Tifl Little Wear — Kidswear Marketplace & Live Sales, Lahore">
-<meta property="og:description" content="Shop kidswear anytime, or catch our live sales for one-tap buying while you watch.">
-<meta property="og:url" content="https://www.tifllittlewear.com/">
-<meta name="twitter:card" content="summary_large_image">
-
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ClothingStore",
-  "name": "Tifl Little Wear",
-  "description": "Kidswear marketplace and live-sale shopping, based in Lahore, Pakistan.",
-  "url": "https://www.tifllittlewear.com/",
-  "telephone": "+92-42-1234-5678",
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "MM Alam Road area, Gulberg III",
-    "addressLocality": "Lahore",
-    "addressCountry": "PK"
-  },
-  "openingHoursSpecification": {
-    "@type": "OpeningHoursSpecification",
-    "dayOfWeek": ["Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
-    "opens": "11:00",
-    "closes": "20:00"
-  }
-}
-</script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zelo — Made-to-Measure Tailoring, Ready-to-Wear &amp; Live Sell</title>
+<meta name="description" content="Zelo is a Lahore tailoring studio: book a fitting for made-to-measure pieces, shop ready-to-wear, or catch genuine export-leftover stock live.">
+<link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .hero { padding: 68px 0 40px; }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center; }
+  @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } }
+  .hero h1 { font-size: clamp(32px, 5vw, 50px); }
+  .hero-visual { border-radius: var(--radius-card); overflow: hidden; border: 1.5px solid var(--border); aspect-ratio: 4/3; }
+  .hero-visual img { width: 100%; height: 100%; object-fit: cover; }
+  .pillar-card { padding: 26px; }
+  .pillar-card .icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 14px; }
+  .live-strip { background: var(--navy); border-radius: var(--radius-card); padding: 32px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; color: #fff; }
+  @media (max-width: 700px) { .live-strip { grid-template-columns: 1fr; text-align: center; } }
+</style>
 </head>
 <body>
+<div id="site-header"></div>
 
-<header class="site">
-  <div class="nav-inner">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.png" alt="Tifl Little Wear" class="brand-logo">
-      <span class="sub">Lahore</span>
-    </a>
-    <nav class="tabs" id="navTabs">
-      <a href="index.html" aria-current="page">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="live-sell.html">Live Sale</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <div class="nav-right">
-      <a class="btn btn-ghost btn-sm" href="account.html" style="margin-right:4px;">Account</a>
-      <a class="cart-btn" href="shop.html" id="cartOpenBtn" aria-label="View cart">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
-      </a>
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-
-  <div class="hero">
+<main>
+  <section class="hero container">
     <div class="hero-grid">
       <div>
-        <div class="eyebrow">Live now &amp; anytime · Lahore</div>
-        <h1>Shop kidswear — <span class="accent">live</span> or anytime.</h1>
-        <p class="lede">Browse the full catalogue whenever you like, or catch a live sale for one-tap buying while you watch. Real Lahore-based sellers, cash on delivery.</p>
-        <div class="hero-ctas">
-          <a class="btn btn-primary" href="live-sell.html">🔴 Watch live sale</a>
-          <a class="btn btn-ghost" href="shop.html">Browse the shop</a>
-        </div>
-        <div class="stat-row">
-          <div class="stat"><b>COD</b><span>Cash on delivery</span></div>
-          <div class="stat"><b>1-tap</b><span>Buy during live sales</span></div>
-          <div class="stat"><b>Lahore</b><span>Based &amp; delivering locally</span></div>
+        <span class="eyebrow">Tailoring · Ready-to-Wear · Live Sell</span>
+        <h1>Clothes cut to<br>how you actually live.</h1>
+        <p class="lead" style="max-width:460px">Book a fitting for something made to your measurements, shop what's already on the rack, or catch genuine export-leftover pieces live — all from one studio in Lahore.</p>
+        <div class="flex gap-md" style="margin-top:22px;flex-wrap:wrap">
+          <a href="booking.html" class="btn btn-primary btn-lg">Book a Fitting</a>
+          <a href="live-sell.html" class="btn btn-navy btn-lg">Watch Live Sell</a>
         </div>
       </div>
-
-      <div class="tape-figure" aria-hidden="true">
-        <svg viewBox="0 0 420 440" xmlns="http://www.w3.org/2000/svg">
-          <rect x="1" y="1" width="418" height="438" rx="19" fill="#FFFFFF" stroke="#E5E5E5"/>
-          <circle cx="210" cy="150" r="70" fill="#F5F5F5" stroke="#0A0A0A" stroke-width="2"/>
-          <g transform="translate(150,90)" fill="#0A0A0A">
-            <circle cx="60" cy="30" r="26"/>
-            <path d="M20 62 Q60 40 100 62 L110 190 Q60 210 10 190 Z"/>
-            <rect x="-10" y="70" width="24" height="90" rx="12"/>
-            <rect x="106" y="70" width="24" height="90" rx="12"/>
-            <rect x="25" y="190" width="28" height="90" rx="12"/>
-            <rect x="67" y="190" width="28" height="90" rx="12"/>
-          </g>
-          <g font-family="'Fredoka',sans-serif" font-weight="600" font-size="15" fill="#E0342B">
-            <circle cx="60" cy="330" r="5"/>
-            <text x="72" y="335">LIVE</text>
-          </g>
-          <text x="60" y="365" font-family="IBM Plex Mono, monospace" font-size="10" fill="#0A0A0A">Tap to buy while you watch</text>
-        </svg>
+      <div class="hero-visual">
+        <img src="https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&h=600&fit=crop&q=80" alt="Tailoring studio">
       </div>
     </div>
-  </div>
+  </section>
 
-  <hr class="seam">
+  <hr class="seam-rule container">
 
-  <div style="padding:40px 0 10px;">
-    <div class="chip-row" id="homeCategoryChips">
-      <a class="chip" href="shop.html">All</a>
-      <a class="chip" href="shop.html?category=Boys">Boys</a>
-      <a class="chip" href="shop.html?category=Girls">Girls</a>
-      <a class="chip" href="shop.html?category=Newborn">Newborn</a>
-      <a class="chip" href="shop.html?category=Occasion">Occasion wear</a>
-      <a class="chip" href="shop.html?category=Accessories">Accessories</a>
+  <section class="section container">
+    <div class="text-center" style="margin-bottom:32px">
+      <span class="eyebrow">Three Ways to Shop</span>
+      <h2>Pick your pace.</h2>
     </div>
-  </div>
+    <div class="grid grid-3">
+      <div class="card pillar-card">
+        <div class="icon" style="background:rgba(74,147,232,0.12);color:var(--blue-deep)">✂️</div>
+        <h3>Made to Measure</h3>
+        <p>Save your measurements once, then order tailoring or design-studio pieces built exactly to them.</p>
+        <a href="measurements.html" class="btn btn-outline btn-sm">Add Measurements</a>
+      </div>
+      <div class="card pillar-card">
+        <div class="icon" style="background:var(--blush);color:#7a3d36">🧵</div>
+        <h3>Ready to Wear</h3>
+        <p>Full-stock, full-price pieces cut from the same fabric and pattern library as our tailoring line.</p>
+        <a href="shop.html" class="btn btn-outline btn-sm">Browse the Shop</a>
+      </div>
+      <div class="card pillar-card">
+        <div class="icon" style="background:rgba(31,42,61,0.08);color:var(--navy)">📡</div>
+        <h3>Live Sell</h3>
+        <p>Genuine export-leftover pieces from Zainab Export, sold live with cash on delivery in Lahore.</p>
+        <a href="live-sell.html" class="btn btn-outline btn-sm">Watch Now</a>
+      </div>
+    </div>
+  </section>
 
-  <div style="padding:20px 0 10px;">
-    <div class="eyebrow">Featured</div>
-    <h2 style="font-size:24px;margin-bottom:20px;">New and popular right now.</h2>
-    <div class="product-grid" id="homeFeaturedGrid"></div>
-    <div style="text-align:center;margin-top:-30px;margin-bottom:60px;">
-      <a class="btn btn-ghost" href="shop.html">View full shop →</a>
+  <section class="container section-tight">
+    <div class="live-strip">
+      <div>
+        <span class="badge" style="background:rgba(255,255,255,0.12);color:var(--blush)">● Live Now</span>
+        <h3 style="color:#fff;margin:10px 0 4px">Warehouse Floor — Export Leftover Sorting</h3>
+        <p style="color:rgba(255,255,255,0.65);margin:0">1,200+ watching · up to 70% off genuine export stock</p>
+      </div>
+      <a href="live-sell.html" class="btn btn-primary btn-lg">Join the Live</a>
     </div>
-  </div>
+  </section>
 
-  <div class="craft-grid" style="margin-bottom:60px;">
-    <div class="craft-card">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      <h3>Cash on delivery</h3>
-      <p>Pay when it arrives — no online payment needed, across Lahore.</p>
+  <section class="section container">
+    <div class="text-center" style="margin-bottom:32px">
+      <span class="eyebrow">Journal</span>
+      <h2>From the studio floor.</h2>
     </div>
-    <div class="craft-card">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6L9 17l-5-5"/></svg>
-      <h3>Checked before listing</h3>
-      <p>Every piece is checked for fit and finish before it goes up for sale.</p>
+    <div class="grid grid-2">
+      <a href="blog-behind-the-seams.html" class="card card-interactive">
+        <span class="badge badge-blue">Craft</span>
+        <h3 style="margin-top:12px">Behind the Seams</h3>
+        <p>How a single made-to-measure order moves from fabric bolt to finished garment.</p>
+      </a>
+      <a href="blog-eid-collection-story.html" class="card card-interactive">
+        <span class="badge badge-blush">Collection</span>
+        <h3 style="margin-top:12px">The Eid Collection Story</h3>
+        <p>Why this year's Eid pieces lean on hand embroidery, sourced metre by metre.</p>
+      </a>
     </div>
-    <div class="craft-card">
-      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <h3>Lahore-based</h3>
-      <p>Real sellers, real stock, delivering locally.</p>
-    </div>
-  </div>
-
+  </section>
 </main>
 
-<footer class="site">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <img src="assets/logo.png" alt="Tifl Little Wear" style="height:34px;width:auto;">
-        <p style="color:var(--ink-soft);font-size:13.5px;margin-top:12px;max-width:260px;">A made-to-measure kidswear studio working out of Gulberg, Lahore. Measured by hand, stitched by hand.</p>
-      </div>
-      <div>
-        <h5>Shop</h5>
-        <a href="shop.html">Ready pieces</a>
-        <a href="live-sell.html">Live sale</a>
-      </div>
-      <div>
-        <h5>Contact</h5>
-        <a href="tel:+924212345678">+92 42 1234 5678</a>
-        <a href="mailto:studio@tiflwear.pk">studio@tiflwear.pk</a>
-        <span style="display:block;font-size:14px;padding:4px 0;">Gulberg III, Lahore</span>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <span>© 2026 Tifl Little Wear, Lahore.</span>
-      <span style="display:flex;gap:16px;flex-wrap:wrap;">
-        <a href="privacy-policy.html" style="color:var(--ink-soft);text-decoration:none;">Privacy Policy</a>
-        <a href="cookie-policy.html" style="color:var(--ink-soft);text-decoration:none;">Cookie Policy</a>
-        <a href="#" data-open-consent style="color:var(--ink-soft);text-decoration:none;">Cookie Preferences</a>
-      </span>
-    </div>
-  </div>
-</footer>
-
-<!-- CART DRAWER -->
-<div class="overlay" id="overlay"></div>
-<aside class="drawer" id="cartDrawer">
-  <div class="drawer-head">
-    <h2>Your cart</h2>
-    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close cart">&times;</button>
-  </div>
-  <div class="drawer-items" id="drawerItems"></div>
-  <div class="drawer-foot">
-    <div class="sub-row"><span>Subtotal</span><span id="cartSubtotal">PKR 0</span></div>
-    <a class="btn btn-primary btn-block" id="checkoutLink" href="checkout.html">Begin checkout</a>
-  </div>
-</aside>
-
-<a class="whatsapp-float" href="https://wa.me/924212345678" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.7 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.2.6.3.5.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.8.9 2.1 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3z"/></svg>
-</a>
-<span class="whatsapp-tip">Chat with us</span>
-
-<div class="toast" id="toast"></div>
-<script src="rudderstack.js"></script>
-<script src="consent.js"></script>
+<div id="site-footer"></div>
 <script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
 </body>
 </html>

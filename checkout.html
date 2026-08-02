@@ -1,141 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Checkout — Tifl Little Wear</title>
-<meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Complete your order at Tifl Little Wear.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — Zelo</title>
+<meta name="description" content="Review your order and place it with Cash on Delivery.">
+<link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div id="site-header"></div>
+<main>
 
-<header class="site">
-  <div class="nav-inner">
-    <a class="brand" href="index.html">
-      <img src="assets/logo.png" alt="Tifl Little Wear" class="brand-logo">
-      <span class="sub">Lahore</span>
-    </a>
-    <nav class="tabs" id="navTabs">
-      <a href="index.html">Home</a>
-      <a href="shop.html">Shop</a>
-      <a href="live-sell.html">Live Sale</a>
-      <a href="contact.html">Contact</a>
-    </nav>
-    <div class="nav-right">
-      <a class="btn btn-ghost btn-sm" href="account.html" style="margin-right:4px;">Account</a>
-      <a class="cart-btn" href="shop.html" aria-label="View cart">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
-      </a>
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-</header>
-
-<main class="wrap">
-  <div class="section-head" style="padding:36px 0 8px;">
-    <div class="eyebrow">Checkout</div>
-    <h1>Complete your order.</h1>
-    <p class="lede">Cash on delivery or bank transfer — we'll confirm by phone once it's placed.</p>
-  </div>
-
-  <div class="booking-grid" style="padding-bottom:80px;">
-    <form class="book-form" id="checkoutForm">
-      <div class="eyebrow" style="margin-bottom:6px;">Contact</div>
-      <div class="form-grid">
-        <div class="field"><label for="coName">Full name</label><input required type="text" id="coName"></div>
-        <div class="field"><label for="coPhone">Phone</label><input required type="tel" id="coPhone" placeholder="03xx-xxxxxxx"></div>
-        <div class="field full"><label for="coEmail">Email (optional)</label><input type="email" id="coEmail"></div>
+  <section class="page-hero container" style="padding-bottom:16px">
+    <span class="eyebrow">Checkout</span>
+    <h1>Almost there.</h1>
+  </section>
+  <section class="container section-tight">
+    <div class="grid grid-2" style="align-items:start">
+      <div class="card">
+        <h3>Delivery Details</h3>
+        <form id="checkout-form" onsubmit="return submitOrder(event)">
+          <div class="field"><label>Full Name</label><input class="input" id="c-name" type="text" required></div>
+          <div class="field"><label>Phone Number</label><input class="input mono" id="c-phone" type="tel" placeholder="03XX-XXXXXXX" required></div>
+          <div class="field"><label>Delivery Address</label><textarea class="input" id="c-address" rows="3" required></textarea></div>
+          <div class="field"><label>City</label>
+            <select class="input" id="c-city"><option>Lahore</option><option>Karachi</option><option>Islamabad</option><option>Other</option></select>
+          </div>
+          <div class="field"><label>Payment</label>
+            <select class="input" id="c-payment"><option>Cash on Delivery</option><option>Bank Transfer</option></select>
+          </div>
+          <button class="btn btn-primary btn-block btn-lg" type="submit">Place Order</button>
+        </form>
       </div>
-
-      <div class="eyebrow" style="margin:26px 0 6px;">Delivery address</div>
-      <div class="form-grid">
-        <div class="field full"><label for="coAddress">Street address</label><input required type="text" id="coAddress" placeholder="House / street"></div>
-        <div class="field full"><label for="coAddress2">Apartment, unit, etc. (optional)</label><input type="text" id="coAddress2"></div>
-        <div class="field"><label for="coCity">City</label><input required type="text" id="coCity" value="Lahore"></div>
-        <div class="field"><label for="coState">State / Province (optional)</label><input type="text" id="coState" value="Punjab"></div>
-        <div class="field"><label for="coPostal">Postal code</label><input type="text" id="coPostal" placeholder="e.g. 54000"></div>
-        <div class="field"><label for="coCountry">Country</label><input required type="text" id="coCountry" value="Pakistan"></div>
-      </div>
-
-      <div class="eyebrow" style="margin:26px 0 6px;">Payment</div>
-      <div class="form-grid">
-        <div class="field full"><label for="coPayment">Payment method</label>
-          <select id="coPayment">
-            <option>Cash on delivery</option>
-            <option>Bank transfer</option>
-          </select>
-        </div>
-        <div class="field full"><label for="coNotes">Order notes (optional)</label><textarea id="coNotes" rows="2" placeholder="Delivery instructions, gift note, etc."></textarea></div>
-      </div>
-
-      <button type="submit" class="btn btn-primary btn-block" style="margin-top:22px;">Place order</button>
-    </form>
-
-    <div>
-      <div class="side-card">
-        <h3>Order summary</h3>
-        <div id="checkoutItems" style="margin-top:10px;"></div>
-        <hr class="seam" style="margin:16px 0;">
-        <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:14px;margin-bottom:8px;">
-          <span>Subtotal</span><span id="checkoutSubtotal">PKR 0</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;">
-          <span>Total</span><span id="checkoutTotal">PKR 0</span>
-        </div>
-      </div>
-      <div class="side-card">
-        <h3>Need help with your order?</h3>
-        <p>Message us on <a href="https://wa.me/924212345678" target="_blank" rel="noopener" style="color:var(--primary-dark);">WhatsApp</a> or use the <a href="contact.html" style="color:var(--primary-dark);">contact form</a> — we're happy to help before you check out.</p>
+      <div class="card">
+        <h3>Order Summary</h3>
+        <div id="cart-summary"></div>
+        <hr class="seam seam-tight">
+        <div class="flex-between"><span>Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
+        <div class="flex-between" style="margin-top:6px"><span>Delivery</span><span class="price mono">Rs 0</span></div>
+        <hr class="seam seam-tight">
+        <div class="flex-between"><strong>Total</strong><span class="price mono" id="c-total" style="font-size:18px">Rs 0</span></div>
       </div>
     </div>
-  </div>
+  </section>
+  <script>
+    function renderCartSummary() {
+      const cart = Zelo.getCart();
+      const mount = document.getElementById('cart-summary');
+      if (!cart.length) {
+        mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="shop.html" style="color:var(--blue-deep);font-weight:700">Browse the shop</a> or check out the current <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell</a>.</p>';
+        document.getElementById('c-subtotal').textContent = 'Rs 0';
+        document.getElementById('c-total').textContent = 'Rs 0';
+        return;
+      }
+      mount.innerHTML = cart.map(i => `
+        <div class="flex-between" style="margin-bottom:10px">
+          <span style="font-size:13.5px">${i.name} <span class="order-ref">×${i.qty}</span></span>
+          <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
+        </div>`).join('');
+      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      document.getElementById('c-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
+      document.getElementById('c-total').textContent = 'Rs ' + subtotal.toLocaleString();
+    }
+    function submitOrder(e) {
+      e.preventDefault();
+      const cart = Zelo.getCart();
+      if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
+      const ref = 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+      sessionStorage.setItem('zelo_last_order', JSON.stringify({ ref, cart, total: cart.reduce((s,i)=>s+i.price*i.qty,0) }));
+      Zelo.setCart([]);
+      window.location.href = 'thank-you.html';
+      return false;
+    }
+    renderCartSummary();
+  </script>
+
 </main>
-
-<footer class="site">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <img src="assets/logo.png" alt="Tifl Little Wear" style="height:34px;width:auto;">
-        <p style="color:var(--ink-soft);font-size:13.5px;margin-top:12px;max-width:260px;">A made-to-measure kidswear studio working out of Gulberg, Lahore. Measured by hand, stitched by hand.</p>
-      </div>
-      <div>
-        <h5>Shop</h5>
-        <a href="shop.html">Ready pieces</a>
-        <a href="live-sell.html">Live sale</a>
-      </div>
-      <div>
-        <h5>Contact</h5>
-        <a href="tel:+924212345678">+92 42 1234 5678</a>
-        <a href="mailto:studio@tiflwear.pk">studio@tiflwear.pk</a>
-        <a href="contact.html">Contact form</a>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <span>© 2026 Tifl Little Wear, Lahore.</span>
-      <span style="display:flex;gap:16px;flex-wrap:wrap;">
-        <a href="privacy-policy.html" style="color:var(--ink-soft);text-decoration:none;">Privacy Policy</a>
-        <a href="cookie-policy.html" style="color:var(--ink-soft);text-decoration:none;">Cookie Policy</a>
-        <a href="#" data-open-consent style="color:var(--ink-soft);text-decoration:none;">Cookie Preferences</a>
-      </span>
-    </div>
-  </div>
-</footer>
-
-<a class="whatsapp-float" href="https://wa.me/924212345678" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.7 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.2.6.3.5.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.8.9 2.1 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3z"/></svg>
-</a>
-<span class="whatsapp-tip">Chat with us</span>
-
-<div class="toast" id="toast"></div>
-<script src="rudderstack.js"></script>
-<script src="consent.js"></script>
+<div id="site-footer"></div>
 <script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+
 </body>
 </html>
