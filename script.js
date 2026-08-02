@@ -881,7 +881,19 @@ function initAdminPage(){
       gender: get('gender'),
       age_group: get('age_group') || 'kids',
       item_group_id: get('item_group_id'),
-      category: get('product_type','category') ? (get('product_type','category').split('>').pop() || '').trim() : 'Other',
+      category: (()=>{
+        const known = ['Boys','Girls','Newborn','Occasion','Accessories'];
+        const explicit = get('category');
+        if(explicit && known.includes(explicit)) return explicit;
+        const pt = get('product_type');
+        if(pt){
+          const parts = pt.split('>').map(s=>s.trim());
+          const match = parts.find(p=>known.includes(p));
+          if(match) return match;
+          return parts[1] || parts[0] || 'Other';
+        }
+        return 'Other';
+      })(),
       currency: 'PKR',
       active: true
     };

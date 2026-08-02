@@ -1,25 +1,26 @@
-/* ================= TOKENS ================= */
+/* ================= TOKENS — SSENSE-inspired: stark, editorial, minimal ================= */
 :root{
   --bg:        #FFFFFF;
-  --bg-alt:    #F2F8FE;   /* pale sky tint, card surfaces */
-  --bg-dark:   #16233B;   /* night-sky navy, contrast sections */
-  --bg-dark-2: #101B2E;
-  --ink:       #1F2A3D;
-  --ink-soft:  #5C6B85;
-  --ink-on-dark: #F1F6FD;
-  --ink-on-dark-soft: #9FB1CC;
-  --primary:   #4A93E8;   /* logo sky blue */
-  --primary-dark:#3576C9;
-  --primary-light:#E6F1FD;
-  --accent-pink: #F7C6C2; /* mascot's blush — sparingly */
-  --star:      #E3A008;   /* rating gold, used sparingly */
-  --line:      #E1E8F2;
-  --line-dark: #233553;
-  --radius:    14px;
-  --radius-sm: 8px;
-  --shadow:    0 1px 2px rgba(31,42,61,.05), 0 8px 24px -12px rgba(31,42,61,.16);
-  --shadow-lg: 0 20px 60px -20px rgba(16,27,46,.35);
-  --maxw:      1180px;
+  --bg-alt:    #F5F5F5;   /* neutral light grey, card surfaces — no colour tint */
+  --bg-dark:   #0A0A0A;   /* near-black, contrast sections */
+  --bg-dark-2: #000000;
+  --ink:       #0A0A0A;
+  --ink-soft:  #6E6E6E;
+  --ink-on-dark: #FFFFFF;
+  --ink-on-dark-soft: #A0A0A0;
+  --primary:   #0A0A0A;   /* black is the primary action colour — SSENSE uses black CTAs, not brand colour */
+  --primary-dark:#000000;
+  --primary-light:#F0F0F0;
+  --accent-pink: #F7C6C2; /* logo's blush — kept only for the logo itself, not UI chrome */
+  --sale-red:  #E10600;   /* reserved strictly for sale pricing / live badge — never decorative */
+  --star:      #E3A008;
+  --line:      #E5E5E5;
+  --line-dark: #2A2A2A;
+  --radius:    2px;       /* sharp, architectural — not rounded */
+  --radius-sm: 2px;
+  --shadow:    0 1px 2px rgba(0,0,0,.04), 0 8px 24px -12px rgba(0,0,0,.12);
+  --shadow-lg: 0 20px 60px -20px rgba(0,0,0,.3);
+  --maxw:      1280px;
   --ease:      cubic-bezier(.22,.9,.3,1);
 }
 
@@ -37,7 +38,7 @@ body{
 img,svg{display:block;max-width:100%;}
 a{color:inherit;}
 button{font-family:inherit;}
-h1,h2,h3,h4{font-family:'Fredoka',sans-serif;font-weight:700;margin:0;letter-spacing:-.015em;}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;font-weight:700;margin:0;letter-spacing:-.015em;}
 p{margin:0;}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px;}
 :focus-visible{outline:2px solid var(--primary);outline-offset:3px;}
@@ -63,19 +64,20 @@ p{margin:0;}
 .seam.dark{background-image:repeating-linear-gradient(90deg, var(--line-dark) 0 10px, transparent 10px 18px);}
 
 .btn{
-  appearance:none;border:1px solid transparent;border-radius:999px;
-  padding:13px 26px;font-size:14.5px;font-weight:600;cursor:pointer;
-  display:inline-flex;align-items:center;gap:8px;transition:transform .18s var(--ease), background .18s, border-color .18s, color .18s;
+  appearance:none;border:1px solid transparent;border-radius:var(--radius);
+  padding:14px 28px;font-size:12px;font-weight:600;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.08em;
+  display:inline-flex;align-items:center;gap:8px;transition:transform .12s var(--ease), background .18s, border-color .18s, color .18s;
   font-family:'Inter',sans-serif;text-decoration:none;
 }
-.btn:active{transform:scale(.97);}
+.btn:active{transform:scale(.98);}
 .btn-primary{background:var(--primary);color:#fff;}
 .btn-primary:hover{background:var(--primary-dark);}
 .btn-ghost{background:transparent;color:var(--ink);border-color:var(--ink);}
 .btn-ghost:hover{background:var(--ink);color:var(--bg);}
 .btn-ghost.on-dark{color:var(--ink-on-dark);border-color:var(--ink-on-dark-soft);}
 .btn-ghost.on-dark:hover{background:var(--ink-on-dark);color:var(--bg-dark);}
-.btn-sm{padding:9px 16px;font-size:13px;}
+.btn-sm{padding:10px 18px;font-size:11px;}
 .btn-block{width:100%;justify-content:center;}
 .btn[disabled]{opacity:.5;cursor:not-allowed;}
 
@@ -97,11 +99,12 @@ header.site{
 
 nav.tabs{display:flex;gap:2px;}
 nav.tabs a{
-  appearance:none;border:none;background:transparent;border-radius:999px;
-  padding:9px 16px;font-size:13.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;
+  appearance:none;border:none;background:transparent;border-radius:var(--radius);
+  padding:9px 14px;font-size:11px;font-weight:600;color:var(--ink-soft);cursor:pointer;
+  text-transform:uppercase;letter-spacing:.06em;
   transition:background .2s, color .2s;white-space:nowrap;text-decoration:none;
 }
-nav.tabs a[aria-current="page"]{background:var(--primary-light);color:var(--primary-dark);}
+nav.tabs a[aria-current="page"]{background:var(--primary-light);color:var(--ink);}
 nav.tabs a:hover:not([aria-current="page"]){color:var(--ink);}
 
 .nav-right{display:flex;align-items:center;gap:14px;}
@@ -132,7 +135,7 @@ main{min-height:60vh;}
 .tape-figure svg{width:100%;height:100%;}
 
 .stat-row{display:flex;gap:38px;margin-top:52px;flex-wrap:wrap;}
-.stat b{font-family:'Fredoka',sans-serif;font-size:30px;display:block;color:var(--ink);}
+.stat b{font-family:'Space Grotesk',sans-serif;font-size:30px;display:block;color:var(--ink);}
 .stat span{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;color:var(--ink-soft);text-transform:uppercase;}
 
 .craft-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:20px;}
@@ -145,7 +148,7 @@ main{min-height:60vh;}
 .reviews-block{background:var(--bg-alt);border-radius:var(--radius);padding:56px 8px;margin:80px 0;}
 .reviews-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;padding:0 28px 34px;}
 .rating-summary{display:flex;align-items:center;gap:18px;}
-.rating-summary .score{font-family:'Fredoka',sans-serif;font-size:44px;font-weight:700;line-height:1;}
+.rating-summary .score{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:700;line-height:1;}
 .rating-summary .stars{display:flex;gap:2px;margin-bottom:6px;}
 .rating-summary .stars svg{width:15px;height:15px;color:var(--star);}
 .rating-summary .count{font-size:12.6px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
@@ -156,9 +159,9 @@ main{min-height:60vh;}
 .review-card .stars{display:flex;gap:2px;}
 .review-card .stars svg{width:14px;height:14px;color:var(--star);}
 .review-card .quote{font-size:15px;line-height:1.5;flex:1;}
-.review-card.featured .quote{font-family:'Fredoka',sans-serif;font-size:19px;font-weight:600;line-height:1.4;}
+.review-card.featured .quote{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;line-height:1.4;}
 .review-who{display:flex;align-items:center;gap:12px;}
-.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:700;font-size:14px;color:#fff;flex:none;}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:#fff;flex:none;}
 .review-who .meta{line-height:1.3;}
 .review-who .wname{font-size:13.5px;font-weight:600;}
 .review-who .wloc{font-size:11.8px;color:var(--ink-soft);}
@@ -234,7 +237,7 @@ footer.site{border-top:1px solid var(--line);padding:52px 0 40px;margin-top:60px
 
 /* =============== SHOP =============== */
 .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:30px;}
-.chip{border:1px solid var(--line);background:var(--bg-alt);border-radius:999px;padding:8px 16px;font-size:13px;cursor:pointer;font-weight:600;}
+.chip{border:1px solid var(--line);background:var(--bg-alt);border-radius:var(--radius);padding:9px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer;font-weight:600;}
 .chip.active{background:var(--ink);color:var(--bg);border-color:var(--ink);}
 .product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:70px;}
 .p-card{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--bg-alt);cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s;}
@@ -366,7 +369,7 @@ footer.site{border-top:1px solid var(--line);padding:52px 0 40px;margin-top:60px
 /* Accordion — Details / Materials & Care / Sizing */
 .pd-accordion{margin-top:36px;border-top:1px solid var(--line);}
 .pd-acc-item{border-bottom:1px solid var(--line);}
-.pd-acc-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:18px 2px;cursor:pointer;text-align:left;font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;color:var(--ink);}
+.pd-acc-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:18px 2px;cursor:pointer;text-align:left;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--ink);}
 .pd-acc-trigger .chev{width:16px;height:16px;color:var(--ink-soft);transition:transform .25s var(--ease);flex:none;}
 .pd-acc-item.open .pd-acc-trigger .chev{transform:rotate(180deg);}
 .pd-acc-panel{max-height:0;overflow:hidden;transition:max-height .3s var(--ease);}
