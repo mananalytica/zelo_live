@@ -1,73 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Product — Zelo</title>
-<meta name="description" content="Product detail page.">
-<link rel="icon" href="assets/logo-original-square.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product — Tifl Little Wear</title>
+<meta name="description" content="Shop kidswear at Tifl Little Wear, Lahore.">
+<link rel="canonical" href="https://www.tifllittlewear.com/product.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="site-header"></div>
-<main>
 
-  <section class="container section-tight">
-    <div class="grid grid-2" id="product-mount" style="align-items:start"></div>
-  </section>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const pid = params.get('id') || ZELO_PRODUCTS[0].id;
-    const p = ZELO_PRODUCTS.find(x => x.id === pid) || ZELO_PRODUCTS[0];
-    document.title = p.name + ' — Zelo';
-    document.getElementById('product-mount').innerHTML = `
-      <div class="card card-flush"><img src="${p.img}" style="aspect-ratio:4/5;object-fit:cover;width:100%"></div>
-      <div>
-        <span class="badge badge-blue">${p.cat}</span>
-        <h1 style="margin:14px 0 8px">${p.name}</h1>
-        <div class="price" style="font-size:26px;margin-bottom:14px">Rs ${p.price.toLocaleString()}</div>
-        <p>Cut from the same fabric library as our made-to-measure line. Available in standard sizing, or request a made-to-measure version from the Design Studio.</p>
-        <hr class="seam seam-tight">
-        <div class="field"><label>Size</label>
-          <select class="input" id="pdp-size"><option>S</option><option>M</option><option selected>L</option><option>XL</option></select>
-        </div>
-        <div class="flex gap-md" style="margin-top:8px">
-          <button class="btn btn-navy btn-block" onclick="zeloAddToCart(p.id)">Add to Cart</button>
-          <a href="checkout.html" class="btn btn-primary btn-block">Buy Now</a>
-        </div>
-        <div class="flex gap-sm" style="margin-top:16px;flex-wrap:wrap">
-          <span class="badge badge-success">Genuine Fabric</span>
-          <span class="badge badge-blue">Same Day — Lahore</span>
-          <span class="badge badge-blush">Cash on Delivery</span>
-        </div>
-      </div>`;
-  </script>
+<header class="site">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Tifl Little Wear" class="brand-logo">
+      <span class="sub">Lahore</span>
+    </a>
+    <nav class="tabs" id="navTabs">
+      <a href="index.html">Home</a>
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="live-sell.html">Live Sale</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a class="btn btn-ghost btn-sm" href="account.html" style="margin-right:4px;">Account</a>
+      <a class="cart-btn" href="shop.html" id="cartOpenBtn" aria-label="View cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
 
+<main class="wrap">
+  <p style="padding:20px 0 0;font-size:12.6px;"><a href="shop.html" style="color:var(--ink-soft);text-decoration:none;">← Back to shop</a></p>
+
+  <div id="productDetail" class="product-detail">
+    <div class="pd-media" id="pdMedia"></div>
+    <div class="pd-info">
+      <div class="eyebrow" id="pdBrand">—</div>
+      <h1 id="pdName">Loading…</h1>
+      <p class="pcat" id="pdCategory" style="font-family:'IBM Plex Mono',monospace;color:var(--ink-soft);font-size:12.5px;margin-top:6px;"></p>
+      <p class="pd-price" id="pdPrice"></p>
+      <p class="pd-desc" id="pdDescription"></p>
+      <div id="pdAttributes" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;"></div>
+
+      <div class="pd-feature-strip">
+        <div class="pd-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21v-6a4 4 0 014-4h8a4 4 0 014 4v6M9 11V7a3 3 0 016 0v4"/></svg>
+          <span>Hand-finished seams</span>
+        </div>
+        <div class="pd-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="1" y="3" width="15" height="13"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span>Cash on delivery</span>
+        </div>
+        <div class="pd-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6L9 17l-5-5"/></svg>
+          <span>Checked for fit</span>
+        </div>
+        <div class="pd-feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Lahore-based studio</span>
+        </div>
+      </div>
+
+      <div class="pd-qty-row">
+        <label for="pdQty">Qty</label>
+        <input type="number" id="pdQty" value="1" min="1" max="10">
+      </div>
+      <button class="btn btn-primary btn-block" id="pdAddBtn">Add to cart</button>
+
+      <div class="pd-accordion">
+        <div class="pd-acc-item open">
+          <button class="pd-acc-trigger" data-acc="details">
+            Details
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pd-acc-panel">
+            <div class="pd-acc-panel-inner">
+              <p>✓ Checked for fit and finish before listing</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-acc-item">
+          <button class="pd-acc-trigger" data-acc="materials">
+            Materials &amp; Care
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pd-acc-panel">
+            <div class="pd-acc-panel-inner">
+              <p id="pdMaterialText">Material details available on request.</p>
+              <p style="margin-top:10px;">Machine wash cold, inside out. Line dry in shade. Cool iron if needed — avoid ironing directly over embroidery.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="pd-acc-item">
+          <button class="pd-acc-trigger" data-acc="sizing">
+            Sizing
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="pd-acc-panel">
+            <div class="pd-acc-panel-inner">
+              <div class="pd-detail-grid" id="pdDetailGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="productEmpty" style="display:none;padding:60px 0;text-align:center;color:var(--ink-soft);">
+    <p>We couldn't find that product — it may have been removed.</p>
+    <a class="btn btn-ghost" href="shop.html" style="margin-top:16px;">Back to shop</a>
+  </div>
+
+  <div style="padding:70px 0;">
+    <div class="eyebrow">You might also like</div>
+    <div class="product-grid" id="pdRelated" style="margin-top:14px;"></div>
+  </div>
 </main>
-<div id="site-footer"></div>
-<script src="script.js"></script>
-<script src="consent.js"></script>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img src="assets/logo.png" alt="Tifl Little Wear" style="height:34px;width:auto;">
+        <p style="color:var(--ink-soft);font-size:13.5px;margin-top:12px;max-width:260px;">A made-to-measure kidswear studio working out of Gulberg, Lahore. Measured by hand, stitched by hand.</p>
+      </div>
+      <div>
+        <h5>Shop</h5>
+        <a href="shop.html">Ready pieces</a>
+        <a href="live-sell.html">Live sale</a>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <a data-config-href="phoneHref" href="tel:+924212345678"><span data-config="phone">+92 42 1234 5678</span></a>
+        <a data-config-href="email" href="mailto:studio@tiflwear.pk"><span data-config="email">studio@tiflwear.pk</span></a>
+        <a href="contact.html">Contact form</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Tifl Little Wear, Lahore.</span>
+      <span style="display:flex;gap:16px;flex-wrap:wrap;">
+        <a href="privacy-policy.html" style="color:var(--ink-soft);text-decoration:none;">Privacy Policy</a>
+        <a href="cookie-policy.html" style="color:var(--ink-soft);text-decoration:none;">Cookie Policy</a>
+        <a href="#" data-open-consent style="color:var(--ink-soft);text-decoration:none;">Cookie Preferences</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="cartDrawer">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-items" id="drawerItems"></div>
+  <div class="drawer-foot">
+    <div class="sub-row"><span>Subtotal</span><span id="cartSubtotal">PKR 0</span></div>
+    <a class="btn btn-primary btn-block" id="checkoutLink" href="checkout.html">Begin checkout</a>
+  </div>
+</aside>
+
+<a class="whatsapp-float" href="https://wa.me/924212345678" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.7 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.2.6.3.5.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.8.9 2.1 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3z"/></svg>
+</a>
+<span class="whatsapp-tip">Chat with us</span>
+
+<div class="toast" id="toast"></div>
 <script src="rudderstack.js"></script>
-
-<script>
-  const ZELO_PRODUCTS = [
-    { id:'z1', name:'Charcoal Wool-Blend Overcoat', price:14500, img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
-    { id:'z2', name:'Winter Cotton Kurta', price:5500, img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
-    { id:'z3', name:'Unstitched Lawn — 3 Piece', price:8200, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
-    { id:'z4', name:'Dark Wash Denim Jacket', price:9800, img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
-    { id:'z5', name:'Kids Fleece Hoodie', price:4800, img:'https://images.unsplash.com/photo-1603252109303-27514432f5c3?w=500&h=600&fit=crop&q=80', cat:'Kids' },
-    { id:'z6', name:'Genuine Leather Belt', price:12000, img:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=500&h=600&fit=crop&q=80', cat:'Accessories' }
-  ];
-  function zeloAddToCart(id) {
-    const p = ZELO_PRODUCTS.find(x => x.id === id);
-    if (!p) return;
-    const cart = Zelo.getCart();
-    const existing = cart.find(i => i.id === id);
-    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: p.price, img: p.img, qty: 1 });
-    Zelo.setCart(cart);
-    Zelo.showToast('Added to Cart', p.name);
-  }
-</script>
-
+<script src="consent.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

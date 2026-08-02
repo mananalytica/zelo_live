@@ -1,719 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Live Sell — Zelo | Zainab Export Leftover</title>
-<meta name="description" content="Watch the live, bid the lot, or buy it now — genuine export-leftover garments from Zainab Export, sold live with cash on delivery.">
-<link rel="icon" href="assets/logo-original-square.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Sale — Tifl Little Wear</title>
+<meta name="description" content="Join Tifl Little Wear's live sale — watch featured pieces and buy instantly, one tap, while you watch.">
+<link rel="canonical" href="https://www.tifllittlewear.com/live-sell.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Live Sale — Tifl Little Wear">
+<meta property="og:description" content="Watch and shop live, one tap to buy.">
+<meta property="og:url" content="https://www.tifllittlewear.com/live-sell.html">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+
 <style>
-  /* ---- Live Sell page-specific components (built on shared tokens) ---- */
-  .ls-ticker { background: var(--navy); color: rgba(255,255,255,0.85); overflow: hidden; white-space: nowrap; padding: 8px 0; }
-  .ls-ticker .track { display: inline-flex; animation: ls-marquee 32s linear infinite; }
-  .ls-ticker span { margin: 0 22px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--blush); }
-  @keyframes ls-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.live-sale-container{display:grid;grid-template-columns:1.4fr 1fr;gap:28px;padding:6px 0 60px;}
+.video-section{position:sticky;top:88px;align-self:start;}
+.video-wrapper{position:relative;background:var(--bg-dark);border-radius:var(--radius);overflow:hidden;aspect-ratio:16/9;}
+.video-wrapper video{width:100%;height:100%;object-fit:cover;}
+.video-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--ink-on-dark-soft);text-align:center;padding:20px;}
 
-  .ls-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 980px) { .ls-layout { grid-template-columns: 1fr; } }
+.live-badge{position:absolute;top:16px;left:16px;background:#E0342B;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;padding:6px 12px;border-radius:999px;display:flex;align-items:center;gap:6px;z-index:10;}
+.live-badge .dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:live-pulse 1.6s infinite;}
+@keyframes live-pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.viewer-count-badge{position:absolute;top:16px;right:16px;background:rgba(0,0,0,.55);color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:6px 11px;border-radius:999px;z-index:10;}
 
-  .player { position: relative; border-radius: var(--radius-card); overflow: hidden; background: var(--navy); border: 1.5px solid var(--border); }
-  .player .frame { position: relative; aspect-ratio: 16/9; overflow: hidden; }
-  .player .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; }
-  .player .scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(31,42,61,0.92), rgba(31,42,61,0.15) 55%, transparent); }
-  .live-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); backdrop-filter: blur(6px); border: 1px solid rgba(247,198,194,0.4); color: var(--blush); font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 12px; border-radius: var(--radius-pill); }
-  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blush); animation: pulse 1.4s infinite; }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-  .player-top { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; }
-  .player-countdown { background: rgba(255,255,255,0.12); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 8px 14px; text-align: center; color: #fff; }
-  .player-countdown .lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.6); }
-  .player-countdown .val { font-family: var(--font-mono); font-size: 20px; font-weight: 600; }
-  .player-bottom { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 20px; z-index: 2; }
-  .play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 62px; height: 62px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.35); display: flex; align-items: center; justify-content: center; color: #fff; cursor: pointer; z-index: 2; }
-  .player-actions { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; }
-  .player-actions .left { display: flex; gap: 16px; }
-  .player-actions button { display: flex; align-items: center; gap: 6px; background: none; border: none; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; }
-  .player-actions button:hover { color: var(--blue-deep); }
+.video-controls{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
 
-  .current-lot { display: grid; grid-template-columns: 1fr 1.4fr; gap: 0; }
-  @media (max-width: 700px) { .current-lot { grid-template-columns: 1fr; } }
-  .current-lot .lot-img { position: relative; aspect-ratio: 1/1; background: var(--sky); }
-  .current-lot .lot-img img { width: 100%; height: 100%; object-fit: cover; }
-  .stock-track { height: 8px; background: var(--sky); border-radius: 999px; overflow: hidden; }
-  .stock-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--blush)); border-radius: 999px; transition: width 0.5s ease; }
+.current-item-banner{background:var(--primary-light);border:1px solid var(--primary);border-radius:var(--radius);padding:16px 18px;margin-top:16px;display:none;}
+.current-item-banner.show{display:block;}
+.current-item-banner .label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--primary-dark);margin-bottom:8px;}
+.current-item-banner .item-name{font-family:'Fredoka',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px;}
+.current-item-banner .item-price{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--primary);}
 
-  .lots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  @media (max-width: 700px) { .lots-grid { grid-template-columns: repeat(2, 1fr); } }
-  .lot-card img { aspect-ratio: 4/5; object-fit: cover; width: 100%; }
+.products-sidebar{position:sticky;top:88px;align-self:start;}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.sidebar-header h2{font-size:18px;}
+.product-timeline{display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 260px);overflow-y:auto;padding-right:4px;}
+.timeline-item{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius-sm);padding:14px;transition:border-color .2s;}
+.timeline-item:hover{border-color:var(--primary);}
+.timeline-item-grid{display:grid;grid-template-columns:50px 1fr auto;gap:12px;align-items:center;}
+.timeline-thumb{width:50px;height:50px;border-radius:var(--radius-sm);overflow:hidden;background:var(--bg-alt);}
+.timeline-info{min-width:0;}
+.timeline-info .name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.timeline-info .time{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);margin-top:2px;}
+.timeline-actions{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.timeline-price{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--primary);}
 
-  .chat-panel { display: flex; flex-direction: column; height: 480px; }
-  .chat-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .chat-bubble { display: flex; gap: 8px; animation: ls-slide-up 0.3s ease-out; }
-  @keyframes ls-slide-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  .chat-avatar { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-  .chat-msg { background: var(--sky); border-radius: 14px 14px 14px 3px; padding: 8px 12px; max-width: 85%; }
-  .chat-msg .who { font-size: 11px; font-weight: 700; color: var(--ink-soft); margin-bottom: 2px; }
-  .chat-msg.host { background: rgba(74,147,232,0.1); border: 1px solid rgba(74,147,232,0.25); }
-  .chat-msg.host .who { color: var(--blue-deep); }
-  .chat-input-row { display: flex; gap: 8px; padding: 10px; border-top: 1.5px solid var(--border); }
+.stream-platforms{margin-top:20px;padding-top:20px;border-top:1px solid var(--line);}
+.stream-platforms .label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:10px;}
+.platform-links{display:flex;gap:8px;flex-wrap:wrap;}
+.platform-link{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--bg-alt);border:1px solid var(--line);border-radius:6px;font-size:12px;text-decoration:none;color:var(--ink);transition:all .2s;}
+.platform-link:hover{border-color:var(--primary);color:var(--primary);}
+.platform-link svg{width:16px;height:16px;}
 
-  .auction-row { display: flex; gap: 12px; align-items: center; padding: 10px; border-radius: 12px; background: var(--sky); border: 1px solid var(--border); cursor: pointer; }
-  .auction-row img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.chat-section{margin-top:28px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;}
+.chat-header{padding:14px 18px;background:var(--bg-alt);border-bottom:1px solid var(--line);font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600;}
+.chat-messages{height:260px;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px;}
+.chat-message{font-size:13px;line-height:1.5;}
+.chat-message .username{font-weight:600;color:var(--primary-dark);display:block;margin-bottom:2px;}
+.comment-signed-out{padding:14px 18px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--bg-alt);font-size:12.8px;color:var(--ink-soft);}
+.comment-form{padding:12px 18px;border-top:1px solid var(--line);display:flex;gap:8px;}
+.comment-form input{flex:1;border:1px solid var(--line);border-radius:6px;padding:9px 12px;font-size:13px;font-family:'Inter',sans-serif;}
+.comment-form button{background:var(--primary);color:#fff;border:none;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;}
+.comment-form button:hover{background:var(--primary-dark);}
 
-  .bid-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
-  .bid-row:last-child { border-bottom: none; }
-
-  .drop-zone { border: 2px dashed var(--border-strong); border-radius: var(--radius-card); padding: 40px 20px; text-align: center; cursor: pointer; transition: all .15s; }
-  .drop-zone.active { border-color: var(--blue); background: rgba(74,147,232,0.05); }
-
-  table.admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  table.admin-table th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); padding: 10px 8px; border-bottom: 1.5px solid var(--border); }
-  table.admin-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-
-  .stat-card { text-align: center; padding: 20px; }
-  .stat-card .num { font-family: var(--font-mono); font-size: 24px; font-weight: 600; color: var(--navy); }
-  .stat-card .lbl { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
-
-  .modal-scrim { position: fixed; inset: 0; background: rgba(31,42,61,0.55); backdrop-filter: blur(3px); z-index: 400; display: none; align-items: center; justify-content: center; padding: 16px; }
-  .modal-scrim.open { display: flex; }
-  .modal-box { background: #fff; border-radius: 20px; padding: 24px; width: 100%; max-width: 420px; }
-  .share-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 16px 0; }
-  .share-grid button { border: none; background: none; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-  .share-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
-
-  .fab-whatsapp { position: fixed; bottom: 20px; right: 20px; z-index: 90; width: 52px; height: 52px; border-radius: 50%; background: #2F9E63; color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 24px -8px rgba(31,42,61,0.35); }
+@media (max-width: 980px){
+  .live-sale-container{grid-template-columns:1fr;}
+  .video-section, .products-sidebar{position:relative;top:0;}
+  .products-sidebar{order:2;}
+}
 </style>
 </head>
 <body>
-<div id="site-header"></div>
 
-<div class="ls-ticker">
-  <div class="track">
-    <span>Genuine Export Leftover Stock</span><span>Lahore · Same-Day in DHA, Model Town, Johar Town</span><span>Cash on Delivery Available</span><span>Up to 70% Off Export Quality</span><span>Live Auctions Every Hour</span>
-    <span>Genuine Export Leftover Stock</span><span>Lahore · Same-Day in DHA, Model Town, Johar Town</span><span>Cash on Delivery Available</span><span>Up to 70% Off Export Quality</span><span>Live Auctions Every Hour</span>
+<header class="site">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png" alt="Tifl Little Wear" class="brand-logo">
+      <span class="sub">Lahore</span>
+    </a>
+    <nav class="tabs" id="navTabs">
+      <a href="index.html">Home</a>
+      <a href="shop.html">Shop</a>
+      <a href="live-sell.html" aria-current="page">Live Sale</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a class="btn btn-ghost btn-sm" href="account.html" style="margin-right:4px;">Account</a>
+      <a class="cart-btn" href="shop.html" id="cartOpenBtn" aria-label="View cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="section-head" style="padding:36px 0 8px;">
+    <div class="eyebrow">Live event</div>
+    <h1>Live sale — shop in real time.</h1>
+    <p class="lede">Tap "Buy now" on anything you see — signed-in customers with a saved address check out in one tap, everyone else gets a ten-second form instead of a full cart.</p>
+  </div>
+
+  <div class="live-sale-container">
+    <div class="video-section">
+      <div class="video-wrapper">
+        <div class="live-badge"><span class="dot"></span>LIVE</div>
+        <div class="viewer-count-badge"><span id="viewerCount">234</span> watching</div>
+        <video id="liveVideo" controls autoplay loop muted playsinline poster="">
+          <source src="assets/live-sale-video.mp4" type="video/mp4">
+        </video>
+        <div class="video-empty" id="videoEmpty">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          <p style="font-size:13px;">Add your stream video at <code>assets/live-sale-video.mp4</code>, or swap this for a YouTube/Facebook embed — see the comment at the bottom of this file for both options.</p>
+        </div>
+      </div>
+
+      <div class="video-controls">
+        <button class="btn btn-sm btn-primary" id="muteBtn">🔊 Toggle sound</button>
+        <button class="btn btn-sm btn-ghost" id="fullscreenBtn">⛶ Fullscreen</button>
+        <button class="btn btn-sm btn-ghost" id="shareStreamBtn">📤 Share</button>
+      </div>
+
+      <div class="current-item-banner" id="currentItemBanner">
+        <div class="label">Now featuring</div>
+        <div class="item-name" id="currentItemName">—</div>
+        <div class="item-price" id="currentItemPrice">—</div>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-header">Live comments</div>
+        <div class="chat-messages" id="liveCommentsList"></div>
+        <div class="comment-signed-out" id="commentSignedOut" style="display:none;">
+          <span>Sign in to join the conversation.</span>
+          <a class="btn btn-primary btn-sm" href="account.html">Sign in</a>
+        </div>
+        <form class="comment-form" id="commentForm" style="display:none;">
+          <input type="text" id="commentInput" placeholder="Say something..." maxlength="500">
+          <button type="submit">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="products-sidebar">
+      <div class="sidebar-header">
+        <h2>Featured products</h2>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);"><span id="productCount">0</span> items</span>
+      </div>
+
+      <div class="product-timeline" id="productTimeline"></div>
+
+      <div class="stream-platforms">
+        <div class="label">Watch on other platforms</div>
+        <div class="platform-links">
+          <a href="https://youtube.com" target="_blank" class="platform-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            YouTube
+          </a>
+          <a href="https://facebook.com" target="_blank" class="platform-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </a>
+          <a href="https://instagram.com" target="_blank" class="platform-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Instagram
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img src="assets/logo.png" alt="Tifl Little Wear" style="height:34px;width:auto;">
+        <p style="color:var(--ink-soft);font-size:13.5px;margin-top:12px;max-width:260px;">A made-to-measure kidswear studio working out of Gulberg, Lahore. Measured by hand, stitched by hand.</p>
+      </div>
+      <div>
+        <h5>Shop</h5>
+        <a href="shop.html">Ready pieces</a>
+        <a href="live-sell.html">Live sale</a>
+      </div>
+      <div>
+        <h5>Contact</h5>
+        <a href="tel:+924212345678">+92 42 1234 5678</a>
+        <a href="mailto:studio@tiflwear.pk">studio@tiflwear.pk</a>
+        <a href="contact.html">Contact form</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Tifl Little Wear, Lahore.</span>
+      <span style="display:flex;gap:16px;flex-wrap:wrap;">
+        <a href="privacy-policy.html" style="color:var(--ink-soft);text-decoration:none;">Privacy Policy</a>
+        <a href="cookie-policy.html" style="color:var(--ink-soft);text-decoration:none;">Cookie Policy</a>
+        <a href="#" data-open-consent style="color:var(--ink-soft);text-decoration:none;">Cookie Preferences</a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<div class="checkout-modal" id="quickBuyModal">
+  <div class="checkout-box">
+    <h2>Quick buy</h2>
+    <p id="qbProductName" style="font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--primary-dark);margin-bottom:16px;"></p>
+    <form id="quickBuyForm">
+      <div class="form-grid">
+        <div class="field full"><label for="qbName">Full name</label><input required type="text" id="qbName"></div>
+        <div class="field"><label for="qbPhone">Phone</label><input required type="tel" id="qbPhone"></div>
+        <div class="field"><label for="qbCity">City</label><input type="text" id="qbCity" value="Lahore"></div>
+        <div class="field full"><label for="qbAddress">Delivery address</label><input required type="text" id="qbAddress"></div>
+      </div>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:10px;"><a href="account.html" style="color:var(--primary-dark);">Create an account</a> next time to buy in a single tap.</p>
+      <div style="display:flex;gap:10px;margin-top:16px;">
+        <button type="button" class="btn btn-ghost" id="qbCancelBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-block">Place order</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<main class="container" id="app-root" style="padding-top:24px;min-height:60vh"></main>
-
-<!-- Share modal -->
-<div class="modal-scrim" id="share-modal">
-  <div class="modal-box">
-    <div class="flex-between" style="margin-bottom:8px"><h3 style="margin:0">Share This Live</h3><button class="icon-btn" onclick="closeShareModal()">✕</button></div>
-    <div class="share-grid">
-      <button onclick="shareTo('whatsapp')"><span class="share-circle" style="background:#25D366">💬</span><span style="font-size:11px">WhatsApp</span></button>
-      <button onclick="shareTo('facebook')"><span class="share-circle" style="background:#1877F2">f</span><span style="font-size:11px">Facebook</span></button>
-      <button onclick="shareTo('twitter')"><span class="share-circle" style="background:#111">𝕏</span><span style="font-size:11px">X</span></button>
-      <button onclick="shareNative()"><span class="share-circle" style="background:var(--blue)">↗</span><span style="font-size:11px">More</span></button>
-    </div>
-    <div class="flex gap-sm" style="background:var(--sky);border-radius:12px;padding:10px 12px">
-      <input type="text" id="share-url" readonly class="input" style="border:none;background:none;padding:0;font-size:12px" value="https://zelo.pk/live-sell.html?lot=zainab-export-4482">
-      <button class="btn btn-sm btn-primary" onclick="copyLink()">Copy</button>
-    </div>
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="cartDrawer">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button class="drawer-close" id="drawerCloseBtn" aria-label="Close cart">&times;</button>
   </div>
-</div>
+  <div class="drawer-items" id="drawerItems"></div>
+  <div class="drawer-foot">
+    <div class="sub-row"><span>Subtotal</span><span id="cartSubtotal">PKR 0</span></div>
+    <a class="btn btn-primary btn-block" id="checkoutLink" href="checkout.html">Begin checkout</a>
+  </div>
+</aside>
 
-<a href="https://wa.me/923001234567?text=Assalam-o-Alaikum%2C%20I%20have%20a%20question%20about%20a%20Live%20Sell%20lot." target="_blank" rel="noopener" class="fab-whatsapp" aria-label="WhatsApp us">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.6.1-.2.2-.6.8-.8 1-.1.2-.3.2-.5.1-.2-.1-1-.4-2-1.2-.7-.6-1.2-1.4-1.4-1.6-.1-.2 0-.4.1-.5l.4-.4c.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5l-.7-1.7c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.2-.9.9-.9 2.1s1 2.5 1.1 2.6c.1.2 1.9 3 4.7 4.1.7.3 1.2.4 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1-.1-.1-.2-.2-.5-.3Z"/></svg>
+<a class="whatsapp-float" href="https://wa.me/924212345678" target="_blank" rel="noopener" aria-label="Chat with us on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2zm5.7 14.2c-.2.6-1.3 1.2-1.8 1.3-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.9 0-1.4.7-2 1-2.3.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.2.6.3.5.9 1.5 1.9 2.4 1.3 1.2 2.4 1.5 2.7 1.7.3.2.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.8.9 2.1 1 .3.1.5.2.6.3.1.2.1.7-.1 1.3z"/></svg>
 </a>
+<span class="whatsapp-tip">Chat with us</span>
 
-<div id="site-footer"></div>
-
-<script src="script.js"></script>
-<script src="consent.js"></script>
+<div class="toast" id="toast"></div>
 <script src="rudderstack.js"></script>
+<script src="consent.js"></script>
+<script src="script.js"></script>
 <script>
-/* ============================================================
-   ZELO LIVE SELL — app state + router
-   Uses the shared cart (Zelo.getCart/setCart from script.js) so
-   items added here appear in the same cart as shop.html, and
-   "Buy Now" / "Add to Cart" hand off to the site's checkout.html.
-   ============================================================ */
+  const liveVideo = document.getElementById('liveVideo');
+  liveVideo.addEventListener('loadeddata', ()=> document.getElementById('videoEmpty').style.display = 'none');
+  liveVideo.addEventListener('error', ()=> document.getElementById('videoEmpty').style.display = 'flex');
 
-const app = {
-  currentStream: { host: 'Zainab Export', title: 'Warehouse Floor — Export Leftover Sorting', viewers: 1247 },
-  products: [
-    { id:'p1', name:'Export Overrun — Wool Blend Overcoat (Charcoal)', price:4200, original:14500, stock:4, img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&h=600&fit=crop&q=80', category:'men', sku:'ZX-LEFT-WNTR-12', sizes:['M','L'], desc:'Overrun from a European winter order. Same fabric and stitch line as the export shipment, minor label variance only.', material:'80% Wool, 20% Poly', origin:'Overrun — EU Order' },
-    { id:'p2', name:'Leftover Lawn Kurtas — Winter Cotton', price:1800, original:5500, stock:12, img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop&q=80', category:'women', sku:'ZX-LEFT-KRT-09', sizes:['S','M','L','XL'], desc:'Unshipped balance from a domestic winter order, held back after the export cut was finalised.', material:'100% Cotton', origin:'Pakistan' },
-    { id:'p3', name:'Export Seconds — Running Shoes', price:3900, original:12000, stock:2, img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop&q=80', category:'men', sku:'ZX-SEC-RUN-44', sizes:['8','9','10'], desc:'Quality-control seconds pulled before container loading. Minor cosmetic marks only.', material:'Mesh & Rubber', origin:'Overrun — Seconds' },
-    { id:'p4', name:'Unstitched Lawn — 3 Piece Export Cut', price:2400, original:8200, stock:8, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=500&fit=crop&q=80', category:'women', sku:'ZX-LEFT-LAWN-33', sizes:['Standard'], desc:'Balance yardage from a summer export order, cut into complete 3-piece suits with dupatta.', material:'Lawn Cotton', origin:'Pakistan' },
-    { id:'p5', name:'Denim Jacket — Dark Wash Overrun', price:3200, original:9800, stock:15, img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=500&fit=crop&q=80', category:'men', sku:'ZX-LEFT-DEN-22', sizes:['S','M','L','XL'], desc:'Overrun from a contracted denim order. Authentic wash and construction.', material:'100% Cotton Denim', origin:'Overrun Production' },
-    { id:'p6', name:'Export Leftover Tees — Bulk Lot', price:1100, original:4500, stock:3, img:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=400&h=500&fit=crop&q=80', category:'men', sku:'ZX-LEFT-TEE-11', sizes:['M','L'], desc:'Bulk leftover t-shirts from a completed export order.', material:'100% Pima Cotton', origin:'Export Leftover' },
-    { id:'p7', name:'Kids Winter Hoodies — Mixed Pack', price:1500, original:4800, stock:20, img:'https://images.unsplash.com/photo-1603252109303-27514432f5c3?w=400&h=500&fit=crop&q=80', category:'kids', sku:'ZX-LEFT-KID-07', sizes:['2-3Y','4-5Y','6-7Y'], desc:'Overproduction from a children\u2019s winterwear order. Mixed colourway per pack.', material:'Fleece Cotton', origin:'Pakistan' },
-    { id:'p8', name:'Leather Belt — Export Defect (Buckle Scratch)', price:8500, original:45000, stock:1, img:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=500&fit=crop&q=80', category:'accessories', sku:'ZX-SEC-BLT-01', sizes:['32-36','36-40'], desc:'Genuine leather belt held back at final QC for a minor buckle scratch.', material:'Genuine Leather', origin:'Overrun — Defect' }
-  ],
-  auctions: [
-    { id:'a1', productId:'p3', name:'Export Seconds — Running Shoes', img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=500&fit=crop&q=80', startPrice:1500, currentBid:2400, bidCount:8, endsAt: Date.now()+3600000, bids:[{user:'AliK',amount:2400},{user:'SaraM',amount:2200},{user:'OmerF',amount:1900}] },
-    { id:'a2', productId:'p8', name:'Leather Belt — Export Defect', img:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=500&fit=crop&q=80', startPrice:5000, currentBid:7200, bidCount:12, endsAt: Date.now()+7200000, bids:[{user:'ZainH',amount:7200},{user:'AishaR',amount:6800},{user:'BilalS',amount:6500}] },
-    { id:'a3', productId:'p1', name:'Export Overrun Overcoat', img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=500&fit=crop&q=80', startPrice:2000, currentBid:3100, bidCount:5, endsAt: Date.now()+1800000, bids:[{user:'HamzaQ',amount:3100},{user:'FatimaK',amount:2800}] }
-  ],
-  seller: { revenue: 142580, orders: 892, liveShows: 24, customers: 1104 },
-  admin: { username: 'admin', password: 'admin123', loggedIn: false }
-};
-
-/* ---------- router ---------- */
-const router = {
-  navigate(route, param) {
-    window.location.hash = param ? route + '/' + param : route;
-    this.render();
-  },
-  render() {
-    const hash = window.location.hash.replace('#','') || 'live';
-    const [route, id] = hash.split('/');
-    const root = document.getElementById('app-root');
-    root.innerHTML = '';
-    switch (route) {
-      case 'live': renderLive(root); break;
-      case 'product': renderProduct(root, id); break;
-      case 'auction': renderAuctions(root, id); break;
-      case 'seller': renderSeller(root); break;
-      case 'upload': renderUpload(root); break;
-      case 'admin': renderAdmin(root); break;
-      default: renderLive(root);
-    }
-    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
-  }
-};
-
-function formatTimeLeft(ts) {
-  const diff = ts - Date.now();
-  if (diff <= 0) return 'Ended';
-  const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-  return h > 0 ? `${h}h ${m}m` : `${m}m ${s}s`;
-}
-
-function addLiveToCart(pid, size, qty) {
-  const p = app.products.find(x => x.id === pid);
-  if (!p) return;
-  if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
-  const cart = Zelo.getCart();
-  const existing = cart.find(i => i.id === pid && i.size === size);
-  if (existing) existing.qty += (qty || 1);
-  else cart.push({ id: p.id, name: p.name, price: p.price, img: p.img, size, qty: qty || 1 });
-  Zelo.setCart(cart);
-  Zelo.showToast('Added to Cart', `${p.name} (${size}) ×${qty || 1}`);
-}
-function quickBuy(pid, size) {
-  if (!size) { Zelo.showToast('Select a size', 'Choose a size before buying.'); return; }
-  addLiveToCart(pid, size, 1);
-  window.location.href = 'checkout.html';
-}
-
-/* ---------- share modal ---------- */
-function openShareModal() { document.getElementById('share-modal').classList.add('open'); }
-function closeShareModal() { document.getElementById('share-modal').classList.remove('open'); }
-function copyLink() {
-  const el = document.getElementById('share-url'); el.select();
-  navigator.clipboard.writeText(el.value);
-  Zelo.showToast('Link Copied', 'Share it with your friends.');
-}
-function shareTo(platform) {
-  const url = encodeURIComponent('https://zelo.pk/live-sell.html?lot=zainab-export-4482');
-  const text = encodeURIComponent('Watching genuine export leftover pieces live on Zelo — up to 70% off, cash on delivery in Lahore.');
-  const links = { whatsapp:`https://wa.me/?text=${text}%20${url}`, facebook:`https://www.facebook.com/sharer/sharer.php?u=${url}`, twitter:`https://twitter.com/intent/tweet?text=${text}&url=${url}` };
-  if (links[platform]) window.open(links[platform], '_blank');
-}
-function shareNative() {
-  if (navigator.share) navigator.share({ title:'Zelo Live Sell', text:'Genuine export leftover pieces, live from Lahore.', url:'https://zelo.pk/live-sell.html' });
-  else copyLink();
-}
-
-/* ============================================================
-   RENDER: LIVE (hero player + lots + chat + auctions sidebar)
-   ============================================================ */
-function renderLive(root) {
-  root.innerHTML = `
-    <div class="ls-layout">
-      <div class="flex-col gap-lg">
-        <div class="player">
-          <div class="frame">
-            <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=1200&h=675&fit=crop&q=80" alt="">
-            <div class="scrim"></div>
-            <div class="player-top">
-              <div class="flex gap-sm">
-                <span class="live-pill"><span class="live-dot"></span> Live</span>
-                <span class="live-pill" style="border-color:rgba(255,255,255,0.2);color:#fff">👁 <span id="viewer-count">${app.currentStream.viewers.toLocaleString()}</span></span>
-              </div>
-              <div class="player-countdown"><div class="lbl">Sale Ends In</div><div class="val" id="countdown-live">--:--:--</div></div>
-            </div>
-            <div class="play-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-            <div class="player-bottom">
-              <span class="badge" style="background:var(--blush);color:#7a3d36;margin-bottom:8px">Warehouse Floor</span>
-              <h2 style="color:#fff;margin:0 0 4px;font-size:22px">${app.currentStream.title}</h2>
-              <p style="color:rgba(255,255,255,0.65);font-size:12.5px;margin:0">Genuine overruns &amp; leftover pieces, sorted live</p>
-            </div>
-          </div>
-          <div class="player-actions">
-            <div class="left">
-              <button>👍 <span>2.4k</span></button>
-              <button onclick="openShareModal()">↗ <span>Share</span></button>
-            </div>
-            <button class="btn btn-navy btn-sm" onclick="document.getElementById('lots-grid').scrollIntoView({behavior:'smooth'})">Shop the Lots</button>
-          </div>
-        </div>
-
-        ${renderCurrentLot(app.products[0])}
-
-        <div class="card flex gap-sm" style="align-items:center">
-          <span style="color:var(--blue-deep)">🧾</span>
-          <div id="purchase-ticker" style="font-size:13px"></div>
-        </div>
-
-        <div id="lots-grid">
-          <div class="flex-between" style="margin-bottom:14px">
-            <h3 style="margin:0">More From the Floor</h3>
-            <div class="pill-tab" id="category-filters">
-              <button class="active" data-cat="all" onclick="filterLots('all')">All</button>
-              <button data-cat="men" onclick="filterLots('men')">Men</button>
-              <button data-cat="women" onclick="filterLots('women')">Women</button>
-              <button data-cat="kids" onclick="filterLots('kids')">Kids</button>
-            </div>
-          </div>
-          <div class="lots-grid" id="lots-container">${app.products.slice(1).map(renderLotCard).join('')}</div>
-        </div>
-      </div>
-
-      <div class="flex-col gap-lg">
-        <div class="card card-flush">
-          <div class="flex-between" style="padding:14px 16px;border-bottom:1.5px solid var(--border)">
-            <div class="flex gap-sm"><span>💬</span><strong style="font-size:14px">Live Chat</strong></div>
-            <span class="badge badge-success">847 online</span>
-          </div>
-          <div class="chat-panel">
-            <div id="chat-messages" class="chat-messages hide-scrollbar">
-              <div class="text-center" style="font-size:11px;color:var(--ink-faint)">Zainab Export started the stream 12 mins ago</div>
-              <div class="chat-bubble"><div class="chat-avatar" style="background:rgba(74,147,232,0.15);color:var(--blue-deep)">AK</div><div class="chat-msg"><div class="who">Ali from DHA</div>Is this genuine export stock?</div></div>
-              <div class="chat-bubble"><div class="chat-avatar" style="background:var(--blush);color:#7a3d36">ZE</div><div class="chat-msg host"><div class="who">Zainab Export · Host</div>100% genuine overrun — factory tag is still on it.</div></div>
-            </div>
-            <form class="chat-input-row" onsubmit="sendChatMessage(event)">
-              <input type="text" id="chat-input" class="input" placeholder="Ask about stock, sizes, pickup...">
-              <button type="submit" class="btn btn-primary btn-sm">Send</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="card">
-          <h4 style="margin-bottom:14px">Delivery &amp; Trust</h4>
-          <div class="flex-col gap-md">
-            <div class="flex gap-sm"><span class="badge badge-success" style="border-radius:10px;padding:8px">💵</span><div><strong style="font-size:13.5px;display:block">Cash on Delivery</strong><span style="font-size:12px;color:var(--ink-soft)">No upfront risk.</span></div></div>
-            <div class="flex gap-sm"><span class="badge badge-blue" style="border-radius:10px;padding:8px">🚚</span><div><strong style="font-size:13.5px;display:block">Same Day in Lahore</strong><span style="font-size:12px;color:var(--ink-soft)">DHA, Model Town, Johar Town.</span></div></div>
-            <div class="flex gap-sm"><span class="badge badge-blush" style="border-radius:10px;padding:8px">✓</span><div><strong style="font-size:13.5px;display:block">Genuine Export Stock</strong><span style="font-size:12px;color:var(--ink-soft)">Flaws disclosed upfront.</span></div></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h4 style="margin-bottom:14px">Live Auctions</h4>
-          <div class="flex-col gap-md">
-            ${app.auctions.map(a => `
-              <div class="auction-row" onclick="router.navigate('auction','${a.id}')">
-                <img src="${a.img}">
-                <div style="flex:1;min-width:0">
-                  <p class="order-ref" style="margin:0;color:var(--blue-deep);font-weight:700">Ends ${formatTimeLeft(a.endsAt)}</p>
-                  <p style="margin:2px 0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.name}</p>
-                  <p style="margin:0;font-size:12px;color:var(--ink-soft)">Bid: <span class="price">Rs ${a.currentBid.toLocaleString()}</span> · ${a.bidCount} bids</p>
-                </div>
-              </div>`).join('')}
-          </div>
-          <a href="#auction" onclick="router.navigate('auction')" class="btn btn-navy btn-block btn-sm" style="margin-top:14px">View All Auctions</a>
-        </div>
-      </div>
-    </div>
-  `;
-  initLiveInteractions();
-}
-
-function renderCurrentLot(p) {
-  const pct = Math.round((1 - p.price / p.original) * 100);
-  return `
-    <div class="card card-flush current-lot">
-      <div class="lot-img" onclick="router.navigate('product','${p.id}')" style="cursor:pointer">
-        <img src="${p.img}">
-        <span class="badge badge-danger" style="position:absolute;top:10px;left:10px">Only ${p.stock} Left</span>
-      </div>
-      <div style="padding:22px">
-        <div class="flex-between" style="margin-bottom:8px">
-          <span class="badge badge-blue">Live Now — Lot #4482</span>
-          <span class="order-ref">SKU ${p.sku}</span>
-        </div>
-        <h3 style="cursor:pointer" onclick="router.navigate('product','${p.id}')">${p.name}</h3>
-        <p style="font-size:13.5px">${p.desc}</p>
-        <div class="flex gap-sm" style="margin-bottom:14px;align-items:baseline">
-          <span class="price" style="font-size:24px">Rs ${p.price.toLocaleString()}</span>
-          <span class="price-strike">Rs ${p.original.toLocaleString()}</span>
-          <span class="badge badge-success">Save ${pct}%</span>
-        </div>
-        <div style="margin-bottom:16px">
-          <div class="flex-between" style="font-size:12px;margin-bottom:6px"><span style="color:var(--ink-soft)">Stock running out</span><span style="color:var(--danger);font-weight:700" class="mono">${p.stock} left</span></div>
-          <div class="stock-track"><div class="stock-fill" style="width:${(p.stock/20)*100}%"></div></div>
-        </div>
-        <div class="flex gap-sm" style="flex-wrap:wrap;margin-bottom:16px">
-          <span class="badge badge-blue">Cash on Delivery</span>
-          <span class="badge badge-blue">Same Day (Lahore)</span>
-          <span class="badge badge-blush">Warehouse Pickup Free</span>
-        </div>
-        <div class="flex gap-sm">
-          <select id="size-select-live" class="input" style="max-width:110px">
-            <option value="" selected disabled>Size</option>
-            ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-          </select>
-          <button class="btn btn-navy btn-block" onclick="quickBuy('${p.id}', document.getElementById('size-select-live').value)">⚡ Buy Now — COD</button>
-        </div>
-      </div>
-    </div>`;
-}
-
-function renderLotCard(p) {
-  return `
-    <div class="card card-flush card-interactive" onclick="router.navigate('product','${p.id}')">
-      <div style="position:relative">
-        <img src="${p.img}" class="lot-img-thumb" style="aspect-ratio:4/5;object-fit:cover;width:100%">
-        <span class="badge ${p.stock<=3?'badge-danger':'badge-navy'}" style="position:absolute;top:8px;left:8px">${p.stock<=3?'Only '+p.stock+' left':'Lot #'+p.sku.slice(-2)}</span>
-      </div>
-      <div style="padding:12px">
-        <h4 style="font-size:13.5px;margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</h4>
-        <div class="flex gap-sm" style="align-items:baseline"><span class="price">Rs ${p.price.toLocaleString()}</span><span class="price-strike" style="font-size:11px">Rs ${p.original.toLocaleString()}</span></div>
-        <button class="btn btn-outline btn-sm btn-block" style="margin-top:8px" onclick="event.stopPropagation(); router.navigate('product','${p.id}')">View Lot</button>
-      </div>
-    </div>`;
-}
-
-function filterLots(cat) {
-  document.querySelectorAll('#category-filters button').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-  const filtered = cat === 'all' ? app.products.slice(1) : app.products.slice(1).filter(p => p.category === cat);
-  document.getElementById('lots-container').innerHTML = filtered.map(renderLotCard).join('');
-}
-
-/* ============================================================
-   RENDER: PRODUCT DETAIL
-   ============================================================ */
-function renderProduct(root, id) {
-  const p = app.products.find(x => x.id === id) || app.products[0];
-  const pct = Math.round((1 - p.price / p.original) * 100);
-  root.innerHTML = `
-    <nav class="order-ref" style="margin-bottom:16px"><a href="#live" onclick="router.navigate('live')" style="color:var(--blue-deep)">Live Sell</a> / ${p.name}</nav>
-    <div class="grid grid-2" style="align-items:start">
-      <div class="card card-flush"><img src="${p.img}" style="aspect-ratio:1/1;object-fit:cover;width:100%"></div>
-      <div>
-        <div class="flex-between" style="margin-bottom:8px"><span class="badge badge-blue">Zainab Export</span><span class="order-ref">SKU ${p.sku}</span></div>
-        <h1 style="font-size:26px">${p.name}</h1>
-        <div class="card" style="background:var(--sky);border:none;margin-bottom:16px">
-          <div class="flex gap-sm" style="align-items:baseline;margin-bottom:6px"><span class="price" style="font-size:28px">Rs ${p.price.toLocaleString()}</span><span class="price-strike">Rs ${p.original.toLocaleString()}</span><span class="badge badge-success">Save ${pct}%</span></div>
-          <p style="margin:0;font-size:13.5px">${p.desc}</p>
-        </div>
-        <div class="grid grid-2" style="margin-bottom:16px">
-          <div class="card card-tight"><span class="order-ref">Material</span><p style="margin:2px 0 0;font-weight:700;color:var(--navy);font-size:13.5px">${p.material}</p></div>
-          <div class="card card-tight"><span class="order-ref">Origin</span><p style="margin:2px 0 0;font-weight:700;color:var(--navy);font-size:13.5px">${p.origin}</p></div>
-        </div>
-        <div class="flex gap-sm" style="margin-bottom:16px">
-          <select id="pdp-size" class="input" style="max-width:120px">
-            <option value="" selected disabled>Size</option>
-            ${p.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-          </select>
-        </div>
-        <div class="flex gap-sm">
-          <button class="btn btn-outline btn-block" onclick="addLiveToCart('${p.id}', document.getElementById('pdp-size').value)">Add to Cart</button>
-          <button class="btn btn-primary btn-block" onclick="quickBuy('${p.id}', document.getElementById('pdp-size').value)">⚡ Buy Now — COD</button>
-        </div>
-      </div>
-    </div>
-    <hr class="seam">
-    <h3>You May Also Like</h3>
-    <div class="lots-grid">${app.products.filter(x=>x.id!==p.id).slice(0,4).map(renderLotCard).join('')}</div>
-  `;
-}
-
-/* ============================================================
-   RENDER: AUCTIONS
-   ============================================================ */
-function renderAuctions(root, id) {
-  if (id) { renderAuctionDetail(root, id); return; }
-  root.innerHTML = `
-    <h1>Live Auctions</h1>
-    <p class="lead" style="margin-bottom:24px">Bid on export-leftover pieces still on the warehouse floor. Highest bid when the timer ends wins.</p>
-    <div class="grid grid-3">
-      ${app.auctions.map(a => `
-        <div class="card card-flush card-interactive" onclick="router.navigate('auction','${a.id}')">
-          <img src="${a.img}" style="aspect-ratio:4/5;object-fit:cover;width:100%">
-          <div style="padding:14px">
-            <span class="badge badge-danger">Ends ${formatTimeLeft(a.endsAt)}</span>
-            <h4 style="margin:10px 0 6px;font-size:14px">${a.name}</h4>
-            <p style="margin:0;font-size:12.5px">Current bid</p>
-            <p class="price" style="font-size:18px">Rs ${a.currentBid.toLocaleString()}</p>
-            <p class="order-ref">${a.bidCount} bids so far</p>
-          </div>
-        </div>`).join('')}
-    </div>
-  `;
-}
-
-function renderAuctionDetail(root, id) {
-  const a = app.auctions.find(x => x.id === id) || app.auctions[0];
-  root.innerHTML = `
-    <nav class="order-ref" style="margin-bottom:16px"><a href="#auction" onclick="router.navigate('auction')" style="color:var(--blue-deep)">Auctions</a> / ${a.name}</nav>
-    <div class="grid grid-2" style="align-items:start">
-      <div class="card card-flush"><img src="${a.img}" style="aspect-ratio:1/1;object-fit:cover;width:100%"></div>
-      <div>
-        <span class="badge badge-danger">Ends in <span id="auction-timer">${formatTimeLeft(a.endsAt)}</span></span>
-        <h1 style="margin:12px 0">${a.name}</h1>
-        <div class="card" style="background:var(--sky);border:none;margin-bottom:16px">
-          <p class="order-ref" style="margin:0">Current Bid</p>
-          <p class="price" id="current-bid-display" style="font-size:32px;margin:2px 0">Rs ${a.currentBid.toLocaleString()}</p>
-          <p class="order-ref" style="margin:0">${a.bidCount} bids · started at Rs ${a.startPrice.toLocaleString()}</p>
-        </div>
-        <div class="field"><label>Your Bid (min Rs ${(a.currentBid+100).toLocaleString()})</label>
-          <input type="number" id="bid-amount" class="input mono" min="${a.currentBid+100}" step="100" placeholder="${a.currentBid+100}">
-        </div>
-        <div class="flex gap-sm">
-          <button class="btn btn-navy btn-block" onclick="placeBid('${a.id}')">Place Bid</button>
-          <button class="btn btn-outline" onclick="autoBid('${a.id}',100)">+100</button>
-          <button class="btn btn-outline" onclick="autoBid('${a.id}',500)">+500</button>
-        </div>
-        <hr class="seam seam-tight">
-        <h4>Bid History</h4>
-        <div id="bid-history">${a.bids.map(b => `<div class="bid-row"><span>${b.user}</span><span class="price">Rs ${b.amount.toLocaleString()}</span></div>`).join('')}</div>
-      </div>
-    </div>
-  `;
-  startAuctionTimer(a.id);
-}
-
-function placeBid(aid) {
-  const a = app.auctions.find(x => x.id === aid);
-  const input = document.getElementById('bid-amount');
-  const amount = parseInt(input.value) || (a.currentBid + 100);
-  if (amount <= a.currentBid) { Zelo.showToast('Bid too low', `Must be above Rs ${a.currentBid.toLocaleString()}.`); return; }
-  a.currentBid = amount; a.bidCount++;
-  a.bids.unshift({ user: 'You', amount });
-  renderAuctionDetail(document.getElementById('app-root'), aid);
-  Zelo.showToast('Bid Placed!', `Rs ${amount.toLocaleString()} on ${a.name}`);
-}
-function autoBid(aid, inc) {
-  const a = app.auctions.find(x => x.id === aid);
-  document.getElementById('bid-amount').value = a.currentBid + inc;
-  placeBid(aid);
-}
-function startAuctionTimer(aid) {
-  clearInterval(window._auctionTimer);
-  window._auctionTimer = setInterval(() => {
-    const a = app.auctions.find(x => x.id === aid);
-    const el = document.getElementById('auction-timer');
-    if (el && a) el.textContent = formatTimeLeft(a.endsAt);
-    else clearInterval(window._auctionTimer);
-  }, 1000);
-}
-
-/* ============================================================
-   RENDER: SELLER DASHBOARD
-   ============================================================ */
-function renderSeller(root) {
-  const s = app.seller;
-  root.innerHTML = `
-    <div class="flex-between" style="margin-bottom:20px">
-      <h1 style="margin:0">Seller Dashboard</h1>
-      <a href="#upload" onclick="router.navigate('upload')" class="btn btn-primary">+ Upload Product</a>
-    </div>
-    <div class="grid grid-4" style="margin-bottom:24px">
-      <div class="card stat-card"><div class="num">Rs ${(s.revenue/1000).toFixed(0)}k</div><div class="lbl">Revenue</div></div>
-      <div class="card stat-card"><div class="num">${s.orders}</div><div class="lbl">Orders</div></div>
-      <div class="card stat-card"><div class="num">${s.liveShows}</div><div class="lbl">Live Shows</div></div>
-      <div class="card stat-card"><div class="num">${s.customers}</div><div class="lbl">Customers</div></div>
-    </div>
-    <div class="card">
-      <h4>Inventory Snapshot</h4>
-      <table class="admin-table">
-        <thead><tr><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th></tr></thead>
-        <tbody>${app.products.map(p => `<tr><td>${p.name}</td><td class="mono">${p.sku}</td><td class="price">Rs ${p.price.toLocaleString()}</td><td class="mono">${p.stock}</td></tr>`).join('')}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-/* ============================================================
-   RENDER: UPLOAD PRODUCT
-   ============================================================ */
-function renderUpload(root) {
-  root.innerHTML = `
-    <h1>Upload Product</h1>
-    <div class="grid grid-2" style="align-items:start">
-      <div class="card">
-        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-          <p style="margin:0;font-weight:700;color:var(--navy)">Drag photos here, or click to browse</p>
-          <p style="margin:4px 0 0;font-size:12px">JPG or PNG, up to 5 photos</p>
-          <input type="file" id="file-input" multiple accept="image/*" style="display:none">
-        </div>
-        <div id="upload-preview" class="grid grid-3" style="margin-top:14px"></div>
-      </div>
-      <div class="card">
-        <div class="field"><label>Product Name</label><input type="text" id="up-name" class="input" placeholder="e.g. Export Overrun Wool Coat"></div>
-        <div class="field"><label>SKU</label><input type="text" id="up-sku" class="input mono" placeholder="ZX-LEFT-0001"></div>
-        <div class="grid grid-2">
-          <div class="field"><label>Price (Rs)</label><input type="number" id="up-price" class="input mono"></div>
-          <div class="field"><label>Stock</label><input type="number" id="up-stock" class="input mono"></div>
-        </div>
-        <div class="field"><label>Description</label><textarea id="up-desc" class="input" rows="3"></textarea></div>
-        <button class="btn btn-navy btn-block" onclick="saveProduct()">Publish to Live Sell</button>
-      </div>
-    </div>
-  `;
-  const dz = document.getElementById('drop-zone');
-  const fileInput = document.getElementById('file-input');
-  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add('active'); }));
-  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('active'); }));
-  dz.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
-  fileInput.addEventListener('change', e => handleFiles(e.target.files));
-}
-function handleFiles(files) {
-  const preview = document.getElementById('upload-preview');
-  Array.from(files).slice(0,5).forEach(file => {
-    const url = URL.createObjectURL(file);
-    const div = document.createElement('div');
-    div.innerHTML = `<img src="${url}" style="aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:10px;border:1.5px solid var(--border)">`;
-    preview.appendChild(div);
-  });
-}
-function saveProduct() {
-  const name = document.getElementById('up-name').value.trim();
-  if (!name) { Zelo.showToast('Missing name', 'Give the product a name first.'); return; }
-  app.products.push({
-    id: 'p' + (app.products.length + 1),
-    name, sku: document.getElementById('up-sku').value || 'ZX-NEW-' + Date.now(),
-    price: parseInt(document.getElementById('up-price').value) || 0,
-    original: (parseInt(document.getElementById('up-price').value) || 0) * 2,
-    stock: parseInt(document.getElementById('up-stock').value) || 1,
-    img: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=500&fit=crop&q=80',
-    category: 'men', sizes: ['Standard'],
-    desc: document.getElementById('up-desc').value, material: '—', origin: '—'
-  });
-  Zelo.showToast('Product Published', name + ' is now live.');
-  router.navigate('seller');
-}
-
-/* ============================================================
-   RENDER: ADMIN
-   ============================================================ */
-function renderAdmin(root) {
-  if (!app.admin.loggedIn) {
-    root.innerHTML = `
-      <div class="container" style="max-width:400px;padding:40px 0">
-        <div class="card">
-          <h3>Admin Sign In</h3>
-          <div class="field"><label>Username</label><input type="text" id="admin-user" class="input" value="admin"></div>
-          <div class="field"><label>Password</label><input type="password" id="admin-pass" class="input" value="admin123"></div>
-          <button class="btn btn-navy btn-block" onclick="adminLogin()">Sign In</button>
-        </div>
-      </div>`;
-    return;
-  }
-  root.innerHTML = `
-    <div class="flex-between" style="margin-bottom:20px">
-      <h1 style="margin:0">Admin Panel</h1>
-      <button class="btn btn-outline" onclick="exportGoogleShopping()">Export Google Shopping Feed</button>
-    </div>
-    <div class="card">
-      <table class="admin-table">
-        <thead><tr><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th></th></tr></thead>
-        <tbody>${app.products.map(p => `
-          <tr>
-            <td>${p.name}</td>
-            <td class="mono">${p.sku}</td>
-            <td><input type="number" class="input mono" style="width:90px;padding:6px 8px" value="${p.price}" onchange="updatePrice('${p.id}', this.value)"></td>
-            <td><input type="number" class="input mono" style="width:70px;padding:6px 8px" value="${p.stock}" onchange="updateStock('${p.id}', this.value)"></td>
-            <td><button class="btn btn-outline btn-sm" onclick="deleteProduct('${p.id}')">Delete</button></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-function adminLogin() {
-  const u = document.getElementById('admin-user').value, pw = document.getElementById('admin-pass').value;
-  if (u === app.admin.username && pw === app.admin.password) { app.admin.loggedIn = true; renderAdmin(document.getElementById('app-root')); Zelo.showToast('Welcome back', 'Signed in to Admin.'); }
-  else Zelo.showToast('Invalid credentials', 'Check the username and password.');
-}
-function updateStock(pid, val) { const p = app.products.find(x=>x.id===pid); if (p) p.stock = parseInt(val)||0; }
-function updatePrice(pid, val) { const p = app.products.find(x=>x.id===pid); if (p) p.price = parseInt(val)||0; }
-function deleteProduct(pid) {
-  if (!confirm('Delete this product?')) return;
-  app.products = app.products.filter(x => x.id !== pid);
-  renderAdmin(document.getElementById('app-root'));
-  Zelo.showToast('Product Deleted', 'Removed from inventory.');
-}
-function generateGoogleFeed() {
-  const header = 'id\ttitle\tdescription\tlink\timage_link\tavailability\tprice\tcondition';
-  const rows = app.products.map(p => [p.sku, p.name, p.desc, 'https://zelo.pk/live-sell.html?id='+p.id, p.img, p.stock>0?'in stock':'out of stock', p.price+' PKR', 'new'].join('\t'));
-  return [header, ...rows].join('\n');
-}
-function exportGoogleShopping() {
-  const blob = new Blob([generateGoogleFeed()], { type: 'text/tab-separated-values' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'zelo_google_shopping_feed.txt'; a.click();
-  URL.revokeObjectURL(url);
-  Zelo.showToast('Feed Exported', 'Google Shopping feed downloaded.');
-}
-
-/* ============================================================
-   LIVE INTERACTIONS — countdown, viewer count, ticker, chat sim
-   ============================================================ */
-function initLiveInteractions() {
-  const end = new Date(); end.setHours(23,59,59);
-  function tickCountdown() {
-    let diff = end - new Date(); if (diff < 0) diff = 0;
-    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
-    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
-    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
-    const el = document.getElementById('countdown-live');
-    if (el) el.textContent = `${h}:${m}:${s}`; else clearInterval(window._countdownTimer);
-  }
-  clearInterval(window._countdownTimer); tickCountdown();
-  window._countdownTimer = setInterval(tickCountdown, 1000);
-
-  let viewers = app.currentStream.viewers;
-  clearInterval(window._viewerTimer);
-  window._viewerTimer = setInterval(() => {
-    viewers += Math.floor(Math.random()*7)-3; if (viewers < 1200) viewers = 1200;
-    const el = document.getElementById('viewer-count');
-    if (el) el.textContent = viewers.toLocaleString(); else clearInterval(window._viewerTimer);
-  }, 3000);
-
-  const purchases = ["Hamza from DHA bought Lot #4482 — Rs 4,200","Fatima from Model Town bought Lot #4483 — Rs 1,800","Omer from Johar Town bought Lot #4485 — Rs 2,400","Ayesha from Gulberg bought Lot #4486 — Rs 3,200","Zain from Township bought Lot #4487 — Rs 1,500"];
-  let ti = 0;
-  clearInterval(window._tickerTimer);
-  function rotateTicker() {
-    const el = document.getElementById('purchase-ticker');
-    if (el) { el.innerHTML = `✅ ${purchases[ti]}`; ti = (ti+1)%purchases.length; } else clearInterval(window._tickerTimer);
-  }
-  rotateTicker();
-  window._tickerTimer = setInterval(rotateTicker, 3500);
-
-  const names = ["Ali R.","Sana K.","Usman G.","Aisha M.","Hina Z.","Omer F.","Nadia S."];
-  const msgs = ["Is this available in black?","COD available in Wapda Town?","Original hai na?","Size chart bhej dein","Price final hai?","Bundle deal milega?","Delivery charges kya hain?"];
-  clearInterval(window._chatTimer);
-  window._chatTimer = setInterval(() => {
-    const container = document.getElementById('chat-messages');
-    if (!container) { clearInterval(window._chatTimer); return; }
-    const name = names[Math.floor(Math.random()*names.length)];
-    const msg = msgs[Math.floor(Math.random()*msgs.length)];
-    const div = document.createElement('div');
-    div.className = 'chat-bubble';
-    div.innerHTML = `<div class="chat-avatar" style="background:rgba(74,147,232,0.15);color:var(--blue-deep)">${name.split(' ').map(n=>n[0]).join('')}</div><div class="chat-msg"><div class="who">${name}</div>${msg}</div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-  }, 5000);
-}
-function sendChatMessage(e) {
-  e.preventDefault();
-  const input = document.getElementById('chat-input');
-  const text = input.value.trim(); if (!text) return;
-  const container = document.getElementById('chat-messages');
-  const div = document.createElement('div');
-  div.className = 'chat-bubble'; div.style.justifyContent = 'flex-end';
-  div.innerHTML = `<div class="chat-msg" style="background:var(--navy);color:#fff">${text}</div>`;
-  container.appendChild(div);
-  input.value = ''; container.scrollTop = container.scrollHeight;
-}
-
-window.addEventListener('hashchange', () => router.render());
-window.addEventListener('load', () => router.render());
+  /* ============================================================
+     MULTI-PLATFORM STREAMING SETUP
+     -----------------------------------------------------------
+     Option 1 (recommended): Restream.io — connect YouTube, Facebook,
+       TikTok, get one RTMP server + stream key, broadcast from OBS
+       Studio to all platforms at once, then embed here.
+     Option 2: Go live on YouTube, replace the <video> above with:
+       <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID?autoplay=1&mute=1"
+         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+         allowfullscreen></iframe>
+     Option 3: StreamYard — connect multiple platforms, use their embed code.
+     For a looped pre-recorded video instead of a live stream, just
+     upload your file to assets/live-sale-video.mp4 — it'll autoplay
+     and loop as-is.
+  ============================================================= */
 </script>
 </body>
 </html>
