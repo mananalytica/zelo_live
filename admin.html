@@ -5,37 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Admin — Zelo</title>
 <meta name="description" content="Site administration.">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="site-header"></div>
 <main>
-
   <section class="page-hero container">
     <span class="eyebrow">Restricted</span>
-    <h1>Site Admin</h1>
-    <p class="lead">General site administration lives here. Live-sell inventory, pricing, and stock are managed from the dedicated panel inside the Live Sell page.</p>
-    <div class="flex gap-md" style="justify-content:center;margin-top:20px">
-      <a href="live-sell.html#admin" class="btn btn-primary">Open Live Sell Admin</a>
-      <a href="index.html" class="btn btn-outline">Back to Site</a>
-    </div>
+    <h1>Admin</h1>
+    <p class="lead">Enter the admin key (the same value as the <span class="mono">ADMIN_KEY</span> environment variable on the API) to manage products, CSV imports, and live feeds.</p>
   </section>
-  <section class="container" style="max-width:420px;padding-bottom:64px">
+  <section class="container section-tight" style="max-width:420px">
     <div class="card">
-      <form onsubmit="event.preventDefault(); Zelo.showToast('Admin', 'Connect this form to your real auth before launch.')">
-        <div class="field"><label>Username</label><input class="input" type="text" placeholder="admin"></div>
-        <div class="field"><label>Password</label><input class="input" type="password" placeholder="********"></div>
-        <button class="btn btn-navy btn-block" type="submit">Sign In</button>
+      <form id="admin-form" onsubmit="return goToAdmin(event)">
+        <div class="field"><label>Admin Key</label><input class="input mono" id="admin-key" type="password" placeholder="X-Admin-Key value" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Continue to Admin Panel</button>
       </form>
+      <p style="font-size:11px;color:var(--ink-faint);margin-top:14px">Product management, CSV bulk upload, and live-feed controls live inside the Live Sell admin panel.</p>
     </div>
   </section>
-  
 </main>
 <div id="site-footer"></div>
 <script src="script.js"></script>
 <script src="consent.js"></script>
 <script src="rudderstack.js"></script>
-
+<script>
+  function goToAdmin(e) {
+    e.preventDefault();
+    Zelo.setAdminKey(document.getElementById('admin-key').value);
+    window.location.href = 'live-sell.html#admin';
+    return false;
+  }
+</script>
 </body>
 </html>

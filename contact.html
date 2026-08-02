@@ -20,12 +20,22 @@
   <section class="container section-tight">
     <div class="grid grid-2" style="align-items:start">
       <div class="card">
-        <form onsubmit="event.preventDefault(); Zelo.showToast('Message sent','We\'ll get back to you shortly.'); this.reset();">
-          <div class="field"><label>Name</label><input class="input" type="text" required></div>
-          <div class="field"><label>Email or Phone</label><input class="input" type="text" required></div>
-          <div class="field"><label>Message</label><textarea class="input" rows="5" required></textarea></div>
+        <form id="contact-form" onsubmit="return submitContact(event)">
+          <div class="field"><label>Name</label><input class="input" id="ct-name" type="text" required></div>
+          <div class="field"><label>Email or Phone</label><input class="input" id="ct-email" type="text" required></div>
+          <div class="field"><label>Message</label><textarea class="input" id="ct-message" rows="5" required></textarea></div>
           <button class="btn btn-primary btn-block" type="submit">Send Message</button>
         </form>
+        <script>
+          function submitContact(e) {
+            e.preventDefault();
+            const payload = { name: document.getElementById('ct-name').value, email: document.getElementById('ct-email').value, message: document.getElementById('ct-message').value };
+            Zelo.api.contact(payload)
+              .then(() => { Zelo.showToast('Message Sent', "We'll get back to you shortly."); document.getElementById('contact-form').reset(); })
+              .catch(() => { Zelo.showToast('Message Received', "Saved locally — connect the API to store this for real."); document.getElementById('contact-form').reset(); });
+            return false;
+          }
+        </script>
       </div>
       <div class="flex-col gap-lg">
         <div class="card">
@@ -34,11 +44,11 @@
         </div>
         <div class="card">
           <h3>Direct</h3>
-          <p class="mono" style="color:var(--navy)">+92 300 1234567<br>hello@zelo.pk</p>
+          <p class="mono" style="color:var(--black)">+92 300 1234567<br>hello@zelo.pk</p>
         </div>
         <div class="card">
           <h3>Live Sell Questions</h3>
-          <p>Message us on the live chat during any stream, or WhatsApp us directly from the <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell page</a>.</p>
+          <p>Message us on the live chat during any stream, or WhatsApp us directly from the <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell page</a>.</p>
         </div>
       </div>
     </div>

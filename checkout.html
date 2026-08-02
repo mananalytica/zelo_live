@@ -49,7 +49,7 @@
       const cart = Zelo.getCart();
       const mount = document.getElementById('cart-summary');
       if (!cart.length) {
-        mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="shop.html" style="color:var(--blue-deep);font-weight:700">Browse the shop</a> or check out the current <a href="live-sell.html" style="color:var(--blue-deep);font-weight:700">Live Sell</a>.</p>';
+        mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="index.html" style="color:var(--black);font-weight:700">Browse products</a> or check out the current <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell</a>.</p>';
         document.getElementById('c-subtotal').textContent = 'Rs 0';
         document.getElementById('c-total').textContent = 'Rs 0';
         return;

@@ -3,37 +3,77 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Account — Zelo</title>
-<meta name="description" content="View your saved measurements, past orders, and live-sell purchases in one place.">
+<title>Account — Zelo</title>
+<meta name="description" content="Sign up to buy from Zelo Live Sell, or sign in to see your orders.">
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <div id="site-header"></div>
 <main>
-
   <section class="page-hero container">
     <span class="eyebrow">Account</span>
-    <h1>Welcome back.</h1>
-    <p class="lead">Sign in to see your saved measurements, order history, and live-sell purchases.</p>
+    <h1>Sign up to buy live.</h1>
+    <p class="lead">One quick account and you can bid, quick-buy, and check out on every Live Sell stream — no re-entering your details each time.</p>
   </section>
-  <section class="container" style="max-width:420px;padding-bottom:64px">
-    <div class="card">
-      <form onsubmit="event.preventDefault(); Zelo.showToast('Signed in','This is a design preview — no live accounts yet.')">
-        <div class="field"><label>Email or Phone</label><input class="input" type="text" placeholder="you@email.com" required></div>
-        <div class="field"><label>Password</label><input class="input" type="password" placeholder="********" required></div>
-        <button class="btn btn-navy btn-block" type="submit">Sign In</button>
+  <section class="container section-tight" style="max-width:440px">
+    <div class="pill-tab" id="auth-tabs" style="margin-bottom:20px">
+      <button class="active" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
+      <button data-tab="signin" onclick="switchTab('signin')">Sign In</button>
+    </div>
+
+    <div class="card" id="tab-signup">
+      <form id="signup-form" onsubmit="return submitSignup(event)">
+        <div class="field"><label>Full Name</label><input class="input" id="su-name" type="text" required></div>
+        <div class="field"><label>Phone Number</label><input class="input mono" id="su-phone" type="tel" placeholder="03XX-XXXXXXX" required></div>
+        <div class="field"><label>Email (optional)</label><input class="input" id="su-email" type="email"></div>
+        <div class="field"><label>Password</label><input class="input" id="su-password" type="password" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Create Account</button>
+        <p style="font-size:11px;color:var(--ink-faint);margin-top:12px">By signing up you agree to the <a href="privacy-policy.html" style="color:var(--black);font-weight:700">Privacy Policy</a>.</p>
       </form>
-      <hr class="seam seam-tight">
-      <p style="text-align:center;font-size:13px">New here? <a href="booking.html" style="color:var(--blue-deep);font-weight:700">Book a fitting</a> to start an account.</p>
+    </div>
+
+    <div class="card" id="tab-signin" style="display:none">
+      <form id="signin-form" onsubmit="return submitSignin(event)">
+        <div class="field"><label>Email or Phone</label><input class="input" id="si-id" type="text" required></div>
+        <div class="field"><label>Password</label><input class="input" id="si-password" type="password" required></div>
+        <button class="btn btn-primary btn-block" type="submit">Sign In</button>
+      </form>
     </div>
   </section>
-  
 </main>
 <div id="site-footer"></div>
 <script src="script.js"></script>
 <script src="consent.js"></script>
 <script src="rudderstack.js"></script>
-
+<script>
+  function switchTab(tab) {
+    document.querySelectorAll('#auth-tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.getElementById('tab-signup').style.display = tab === 'signup' ? 'block' : 'none';
+    document.getElementById('tab-signin').style.display = tab === 'signin' ? 'block' : 'none';
+  }
+  function submitSignup(e) {
+    e.preventDefault();
+    const payload = {
+      name: document.getElementById('su-name').value,
+      phone: document.getElementById('su-phone').value,
+      email: document.getElementById('su-email').value,
+      password: document.getElementById('su-password').value
+    };
+    Zelo.api.signup(payload)
+      .then(res => { Zelo.setUser({ id: res.user_id, name: payload.name, phone: payload.phone }); Zelo.showToast('Account Created', 'You can now buy live.'); window.location.href = 'live-sell.html'; })
+      .catch(err => Zelo.showToast('Sign up failed', err.data && err.data.error ? err.data.error : 'Connect the API (MotherDuck) to enable real accounts.'));
+    return false;
+  }
+  function submitSignin(e) {
+    e.preventDefault();
+    const idVal = document.getElementById('si-id').value;
+    const payload = { email: idVal, phone: idVal, password: document.getElementById('si-password').value };
+    Zelo.api.login(payload)
+      .then(res => { Zelo.setUser(res.user); Zelo.showToast('Welcome back', res.user.name); window.location.href = 'live-sell.html'; })
+      .catch(err => Zelo.showToast('Sign in failed', err.data && err.data.error ? err.data.error : 'Check your details, or connect the API.'));
+    return false;
+  }
+</script>
 </body>
 </html>

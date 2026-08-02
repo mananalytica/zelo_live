@@ -1,19 +1,24 @@
 /* ============================================================
    ZELO — SHARED SITE SCRIPT
-   Injects the common header/footer (same logo + nav on every
-   page), wires the mobile drawer, and exposes small utilities
-   (toast, cart badge) that individual pages can call.
+   Injects the common header/footer, wires the mobile drawer,
+   and exposes shared utilities on window.Zelo:
+     - cart (localStorage, shared across pages)
+     - toast
+     - API helpers (products, live feeds, contact, newsletter,
+       signup/login, admin-key-authed writes) — all hit /api/*
+       (see api/index.py). If that backend isn't deployed/
+       configured yet, calls fail gracefully and pages fall back
+       to their own sample data instead of breaking.
    Load this BEFORE any page-specific inline script.
    ============================================================ */
 
 (function () {
+  const API_BASE = ''; // same-origin '/api/...'; change if your API is on a different host
+
   const NAV_LINKS = [
-    { href: 'shop.html', label: 'Shop' },
+    { href: 'index.html', label: 'Shop' },
     { href: 'live-sell.html', label: 'Live Sell' },
     { href: 'design-studio.html', label: 'Design Studio' },
-    { href: 'measurements.html', label: 'Measurements' },
-    { href: 'booking.html', label: 'Book a Fitting' },
-    { href: 'blog.html', label: 'Journal' },
     { href: 'contact.html', label: 'Contact' }
   ];
 
@@ -30,20 +35,20 @@
     return `
       <div class="container">
         <a href="index.html" class="brand">
-          <img src="assets/logo.png" alt="Zelo logo" onerror="this.style.display='none'">
+          <img src="assets/logo.png" alt="Zelo" onerror="this.style.display='none'">
           <span class="brand-word">Zelo</span>
         </a>
         <nav class="main-nav">${links}</nav>
         <div class="header-actions">
-          <a href="account.html" class="icon-btn" aria-label="Account">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <a href="account.html" class="icon-btn" aria-label="Sign In / Sign Up">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
           </a>
           <a href="checkout.html" class="icon-btn" aria-label="Cart">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
             <span class="cart-count" id="zelo-cart-count" style="display:none">0</span>
           </a>
           <button class="icon-btn nav-toggle" id="zelo-nav-toggle" aria-label="Menu">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
           </button>
         </div>
       </div>`;
@@ -59,7 +64,7 @@
           <button class="icon-btn" id="zelo-nav-close" aria-label="Close menu">✕</button>
         </div>
         ${links}
-        <a href="account.html">Account</a>
+        <a href="account.html">Sign In / Sign Up</a>
         <a href="checkout.html">Cart</a>
       </div>`;
   }
@@ -70,39 +75,41 @@
       <div class="container">
         <div class="footer-grid">
           <div>
-            <span class="brand-word">Zelo <em>Studio</em></span>
-            <p style="margin-top:10px;max-width:280px;font-size:13.5px">Made-to-measure tailoring, ready-to-wear drops, and live-sell clearance — all cut from the same seam.</p>
+            <span class="brand-word">Zelo</span>
+            <p style="margin:14px 0 16px;max-width:280px;font-size:13px">Genuine export-leftover fashion, sold live from the warehouse floor. New drops daily — sign up for first access.</p>
+            <form class="newsletter-row" onsubmit="return zeloNewsletterSubmit(event, this)">
+              <input type="email" placeholder="Email address" required>
+              <button type="submit">Join</button>
+            </form>
           </div>
           <div>
             <h5>Shop</h5>
             <ul>
-              <li><a href="shop.html">Ready to Wear</a></li>
+              <li><a href="index.html">All Products</a></li>
               <li><a href="live-sell.html">Live Sell</a></li>
               <li><a href="design-studio.html">Design Studio</a></li>
             </ul>
           </div>
           <div>
-            <h5>Made to Measure</h5>
+            <h5>Account</h5>
             <ul>
-              <li><a href="measurements.html">Measurement Guide</a></li>
-              <li><a href="booking.html">Book a Fitting</a></li>
-              <li><a href="account.html">My Orders</a></li>
+              <li><a href="account.html">Sign In / Sign Up</a></li>
+              <li><a href="checkout.html">Cart</a></li>
+              <li><a href="admin.html">Admin</a></li>
             </ul>
           </div>
           <div>
             <h5>Company</h5>
             <ul>
-              <li><a href="blog.html">Journal</a></li>
               <li><a href="contact.html">Contact</a></li>
               <li><a href="privacy-policy.html">Privacy Policy</a></li>
               <li><a href="cookie-policy.html">Cookie Policy</a></li>
             </ul>
           </div>
         </div>
-        <hr class="seam seam-navy seam-tight">
         <div class="footer-bottom">
-          <span>© ${year} Zelo Studio. All rights reserved.</span>
-          <span>Tailored in Lahore, worn everywhere.</span>
+          <span>© ${year} ZELO. ALL RIGHTS RESERVED.</span>
+          <span>LAHORE, PAKISTAN</span>
         </div>
       </div>`;
   }
@@ -110,16 +117,9 @@
   function injectChrome() {
     const headerMount = document.getElementById('site-header');
     const footerMount = document.getElementById('site-footer');
-    if (headerMount) {
-      headerMount.className = 'site-header';
-      headerMount.innerHTML = headerHTML();
-    }
-    if (footerMount) {
-      footerMount.className = 'site-footer';
-      footerMount.innerHTML = footerHTML();
-    }
+    if (headerMount) { headerMount.className = 'site-header'; headerMount.innerHTML = headerHTML(); }
+    if (footerMount) { footerMount.className = 'site-footer'; footerMount.innerHTML = footerHTML(); }
 
-    // Mobile nav drawer
     if (!document.getElementById('zelo-mobile-nav')) {
       const drawer = document.createElement('div');
       drawer.id = 'zelo-mobile-nav';
@@ -136,7 +136,6 @@
     if (scrim) scrim.addEventListener('click', close);
     if (closeBtn) closeBtn.addEventListener('click', close);
 
-    // Toast host
     if (!document.getElementById('zelo-toast')) {
       const toast = document.createElement('div');
       toast.id = 'zelo-toast';
@@ -144,11 +143,10 @@
       toast.innerHTML = `<div><div class="t-title" id="zelo-toast-title">Done</div><div class="t-msg" id="zelo-toast-msg"></div></div>`;
       document.body.appendChild(toast);
     }
-
     updateCartBadge();
   }
 
-  /* ---- Shared utilities, exposed on window.Zelo ---- */
+  /* ---- Toast ---- */
   function showToast(title, msg) {
     const t = document.getElementById('zelo-toast');
     if (!t) return;
@@ -156,26 +154,67 @@
     document.getElementById('zelo-toast-msg').textContent = msg || '';
     t.classList.add('show');
     clearTimeout(t._hideTimer);
-    t._hideTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    t._hideTimer = setTimeout(() => t.classList.remove('show'), 3200);
   }
 
-  function getCart() {
-    try { return JSON.parse(localStorage.getItem('zelo_cart') || '[]'); }
-    catch (e) { return []; }
-  }
-  function setCart(cart) {
-    localStorage.setItem('zelo_cart', JSON.stringify(cart));
-    updateCartBadge();
-  }
+  /* ---- Cart (shared via localStorage) ---- */
+  function getCart() { try { return JSON.parse(localStorage.getItem('zelo_cart') || '[]'); } catch (e) { return []; } }
+  function setCart(cart) { localStorage.setItem('zelo_cart', JSON.stringify(cart)); updateCartBadge(); }
   function updateCartBadge() {
     const badge = document.getElementById('zelo-cart-count');
     if (!badge) return;
     const count = getCart().reduce((s, i) => s + (i.qty || 1), 0);
-    if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; }
-    else badge.style.display = 'none';
+    if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; } else badge.style.display = 'none';
   }
 
-  window.Zelo = { showToast, getCart, setCart, updateCartBadge };
+  /* ---- Buyer session (from /api/signup or /api/login) ---- */
+  function getUser() { try { return JSON.parse(localStorage.getItem('zelo_user') || 'null'); } catch (e) { return null; } }
+  function setUser(u) { localStorage.setItem('zelo_user', JSON.stringify(u)); }
+  function clearUser() { localStorage.removeItem('zelo_user'); }
+
+  /* ---- Admin key (stored locally only, sent as X-Admin-Key header) ---- */
+  function getAdminKey() { return sessionStorage.getItem('zelo_admin_key') || ''; }
+  function setAdminKey(k) { sessionStorage.setItem('zelo_admin_key', k); }
+
+  /* ---- API helpers ---- */
+  async function apiGet(path) {
+    const res = await fetch(API_BASE + path);
+    if (!res.ok) throw new Error('API ' + path + ' -> ' + res.status);
+    return res.json();
+  }
+  async function apiSend(path, method, body, admin) {
+    const headers = { 'Content-Type': 'application/json' };
+    if (admin) headers['X-Admin-Key'] = getAdminKey();
+    const res = await fetch(API_BASE + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error || (method + ' ' + path + ' -> ' + res.status)), { data, status: res.status });
+    return data;
+  }
+
+  const api = {
+    products: () => apiGet('/api/products'),
+    liveFeeds: () => apiGet('/api/live-feeds'),
+    addProduct: (p) => apiSend('/api/products', 'POST', p, true),
+    addLiveFeed: (f) => apiSend('/api/live-feeds', 'POST', f, true),
+    importCsv: (csvText) => fetch(API_BASE + '/api/products/csv', { method: 'POST', headers: { 'Content-Type': 'text/csv', 'X-Admin-Key': getAdminKey() }, body: csvText }).then(async r => { const d = await r.json().catch(()=>({})); if (!r.ok) throw Object.assign(new Error(d.error||'CSV import failed'), { data: d }); return d; }),
+    updateProduct: (id, patch) => apiSend('/api/products/' + id, 'PATCH', patch, true),
+    deleteProduct: (id) => apiSend('/api/products/' + id, 'DELETE', null, true),
+    contact: (payload) => apiSend('/api/contact', 'POST', payload, false),
+    newsletter: (email) => apiSend('/api/newsletter', 'POST', { email }, false),
+    signup: (payload) => apiSend('/api/signup', 'POST', payload, false),
+    login: (payload) => apiSend('/api/login', 'POST', payload, false)
+  };
+
+  window.zeloNewsletterSubmit = function (e, form) {
+    e.preventDefault();
+    const email = form.querySelector('input[type=email]').value;
+    api.newsletter(email)
+      .then(() => { showToast('Subscribed', "You're on the list."); form.reset(); })
+      .catch(() => { showToast('Subscribed', "You're on the list (offline preview — connect the API to persist this)."); form.reset(); });
+    return false;
+  };
+
+  window.Zelo = { showToast, getCart, setCart, updateCartBadge, getUser, setUser, clearUser, getAdminKey, setAdminKey, api };
 
   document.addEventListener('DOMContentLoaded', injectChrome);
 })();
