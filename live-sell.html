@@ -8,9 +8,10 @@
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .ls-ticker { background: var(--black); color: rgba(255,255,255,0.85); overflow: hidden; white-space: nowrap; padding: 8px 0; }
+  .ls-ticker { background: #FFFFFF; color: var(--black); overflow: hidden; white-space: nowrap; padding: 9px 0; border-bottom: 1px solid var(--line); }
   .ls-ticker .track { display: inline-flex; animation: ls-marquee 32s linear infinite; }
-  .ls-ticker span { margin: 0 22px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.75); }
+  .ls-ticker span { margin: 0 22px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--black); font-weight: 600; }
+  .ls-ticker span::before { content: '●'; color: var(--red); font-size: 6px; margin-right: 10px; vertical-align: middle; }
   @keyframes ls-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
   .ls-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: var(--line); align-items: start; }
@@ -205,21 +206,24 @@ function origOf(p) { return p.original_price || p.originalPrice || p.price; }
 
 /* ---------- cart + signup gate ---------- */
 let pendingBuy = null;
-function addLiveToCart(pid, size, qty) {
+function addToCartCore(pid, size, qty) {
   const p = app.products.find(x => x.id === pid);
-  if (!p) return;
-  if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
+  if (!p) return false;
   const cart = Zelo.getCart();
   const existing = cart.find(i => i.id === pid && i.size === size);
   if (existing) existing.qty += (qty || 1);
   else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: qty || 1 });
   Zelo.setCart(cart);
-  Zelo.showToast('Added to Cart', `${p.name} (${size}) ×${qty || 1}`);
+  return true;
+}
+function addLiveToCart(pid, size, qty) {
+  if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
+  if (addToCartCore(pid, size, qty)) Zelo.openCartDrawer();
 }
 function quickBuy(pid, size) {
   if (!size) { Zelo.showToast('Select a size', 'Choose a size before buying.'); return; }
   if (!Zelo.getUser()) { pendingBuy = { pid, size }; openSignupGate(); return; }
-  addLiveToCart(pid, size, 1);
+  addToCartCore(pid, size, 1);
   window.location.href = 'checkout.html';
 }
 function openSignupGate() { document.getElementById('signup-gate-modal').classList.add('open'); }
@@ -232,7 +236,7 @@ function submitSignupGate(e) {
       Zelo.setUser({ id: res.user_id, name: payload.name, phone: payload.phone });
       document.getElementById('signup-gate-modal').classList.remove('open');
       Zelo.showToast('Signed Up', 'You can now check out.');
-      if (pendingBuy) { addLiveToCart(pendingBuy.pid, pendingBuy.size, 1); pendingBuy = null; window.location.href = 'checkout.html'; }
+      if (pendingBuy) { addToCartCore(pendingBuy.pid, pendingBuy.size, 1); pendingBuy = null; window.location.href = 'checkout.html'; }
     })
     .catch(err => Zelo.showToast('Sign up failed', err.data && err.data.error ? err.data.error : 'Connect the API to enable real accounts — proceeding as guest.'));
   return false;

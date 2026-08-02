@@ -143,6 +143,31 @@
       toast.innerHTML = `<div><div class="t-title" id="zelo-toast-title">Done</div><div class="t-msg" id="zelo-toast-msg"></div></div>`;
       document.body.appendChild(toast);
     }
+
+    if (!document.getElementById('zelo-cart-drawer')) {
+      const drawer = document.createElement('div');
+      drawer.id = 'zelo-cart-drawer';
+      drawer.className = 'mobile-nav'; /* reuses the same scrim/panel pattern as the mobile nav */
+      drawer.innerHTML = `
+        <div class="mobile-nav-scrim" id="zelo-cart-scrim"></div>
+        <div class="mobile-nav-panel" style="width:360px">
+          <div class="flex-between" style="margin-bottom:14px">
+            <span style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em">Added to Cart</span>
+            <button class="icon-btn" id="zelo-cart-close" aria-label="Close cart">✕</button>
+          </div>
+          <div id="zelo-cart-drawer-items" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px"></div>
+          <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:14px">
+            <div class="flex-between" style="margin-bottom:12px"><strong style="font-size:12.5px;text-transform:uppercase;letter-spacing:0.04em">Subtotal</strong><span class="price" id="zelo-cart-drawer-subtotal" style="font-size:15px"></span></div>
+            <a href="checkout.html" class="btn btn-primary btn-block">Begin Checkout</a>
+            <button class="btn btn-outline btn-block" id="zelo-cart-continue" style="margin-top:8px">Continue Shopping</button>
+          </div>
+        </div>`;
+      document.body.appendChild(drawer);
+      document.getElementById('zelo-cart-scrim').addEventListener('click', closeCartDrawer);
+      document.getElementById('zelo-cart-close').addEventListener('click', closeCartDrawer);
+      document.getElementById('zelo-cart-continue').addEventListener('click', closeCartDrawer);
+    }
+
     updateCartBadge();
   }
 
@@ -165,6 +190,36 @@
     if (!badge) return;
     const count = getCart().reduce((s, i) => s + (i.qty || 1), 0);
     if (count > 0) { badge.textContent = count; badge.style.display = 'flex'; } else badge.style.display = 'none';
+  }
+
+  function closeCartDrawer() {
+    const d = document.getElementById('zelo-cart-drawer');
+    if (d) d.classList.remove('open');
+  }
+
+  function openCartDrawer() {
+    const cart = getCart();
+    const itemsMount = document.getElementById('zelo-cart-drawer-items');
+    const subtotalMount = document.getElementById('zelo-cart-drawer-subtotal');
+    if (!itemsMount || !subtotalMount) return;
+    if (!cart.length) {
+      itemsMount.innerHTML = `<p style="font-size:13px;color:var(--ink-soft)">Your cart is empty.</p>`;
+      subtotalMount.textContent = 'Rs 0';
+    } else {
+      itemsMount.innerHTML = cart.map(i => `
+        <div class="flex gap-md" style="align-items:flex-start">
+          <img src="${i.img || i.image || ''}" style="width:56px;height:70px;object-fit:cover;border:1px solid var(--line);flex-shrink:0">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;font-weight:600;color:var(--black);line-height:1.4">${i.name}</div>
+            <div class="order-ref">${i.size ? 'Size ' + i.size + ' · ' : ''}Qty ${i.qty || 1}</div>
+            <div class="price" style="font-size:13px;margin-top:2px">Rs ${(i.price * (i.qty || 1)).toLocaleString()}</div>
+          </div>
+        </div>`).join('');
+      const subtotal = cart.reduce((s, i) => s + i.price * (i.qty || 1), 0);
+      subtotalMount.textContent = 'Rs ' + subtotal.toLocaleString();
+    }
+    const d = document.getElementById('zelo-cart-drawer');
+    if (d) d.classList.add('open');
   }
 
   /* ---- Buyer session (from /api/signup or /api/login) ---- */
@@ -214,7 +269,7 @@
     return false;
   };
 
-  window.Zelo = { showToast, getCart, setCart, updateCartBadge, getUser, setUser, clearUser, getAdminKey, setAdminKey, api };
+  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api };
 
   document.addEventListener('DOMContentLoaded', injectChrome);
 })();

@@ -3,71 +3,188 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Product — Zelo</title>
-<meta name="description" content="Product detail page.">
+<title id="page-title">Product — Zelo</title>
+<meta name="description" id="page-desc" content="Genuine export-leftover fashion from Zelo, sold with cash on delivery.">
+<link rel="canonical" id="page-canonical" href="">
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .pdp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 800px) { .pdp-grid { grid-template-columns: 1fr; } }
+  .pdp-img { aspect-ratio: 1/1; background: var(--stone); overflow: hidden; }
+  .pdp-img img { width: 100%; height: 100%; object-fit: cover; }
+</style>
 </head>
 <body>
 <div id="site-header"></div>
-<main>
-
-  <section class="container section-tight">
-    <div class="grid grid-2" id="product-mount" style="align-items:start"></div>
-  </section>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const pid = params.get('id') || ZELO_PRODUCTS[0].id;
-    const p = ZELO_PRODUCTS.find(x => x.id === pid) || ZELO_PRODUCTS[0];
-    document.title = p.name + ' — Zelo';
-    document.getElementById('product-mount').innerHTML = `
-      <div class="card card-flush"><img src="${p.img}" style="aspect-ratio:4/5;object-fit:cover;width:100%"></div>
-      <div>
-        <span class="badge badge-blue">${p.cat}</span>
-        <h1 style="margin:14px 0 8px">${p.name}</h1>
-        <div class="price" style="font-size:26px;margin-bottom:14px">Rs ${p.price.toLocaleString()}</div>
-        <p>Cut from the same fabric library as our made-to-measure line. Available in standard sizing, or request a made-to-measure version from the Design Studio.</p>
-        <hr class="seam seam-tight">
-        <div class="field"><label>Size</label>
-          <select class="input" id="pdp-size"><option>S</option><option>M</option><option selected>L</option><option>XL</option></select>
-        </div>
-        <div class="flex gap-md" style="margin-top:8px">
-          <button class="btn btn-navy btn-block" onclick="zeloAddToCart(p.id)">Add to Cart</button>
-          <a href="checkout.html" class="btn btn-primary btn-block">Buy Now</a>
-        </div>
-        <div class="flex gap-sm" style="margin-top:16px;flex-wrap:wrap">
-          <span class="badge badge-success">Genuine Fabric</span>
-          <span class="badge badge-blue">Same Day — Lahore</span>
-          <span class="badge badge-blush">Cash on Delivery</span>
-        </div>
-      </div>`;
-  </script>
-
+<main class="container section-tight">
+  <nav class="order-ref" id="pdp-crumb" style="margin-bottom:16px"><a href="index.html" style="color:var(--black);font-weight:700">All Products</a></nav>
+  <div id="product-mount">
+    <p style="padding:60px 0;text-align:center;color:var(--ink-faint)">Loading product…</p>
+  </div>
+  <div id="related-mount" style="margin-top:48px"></div>
 </main>
 <div id="site-footer"></div>
+
+<script id="product-jsonld" type="application/ld+json"></script>
 <script src="script.js"></script>
 <script src="consent.js"></script>
 <script src="rudderstack.js"></script>
-
 <script>
-  const ZELO_PRODUCTS = [
-    { id:'z1', name:'Charcoal Wool-Blend Overcoat', price:14500, img:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
-    { id:'z2', name:'Winter Cotton Kurta', price:5500, img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
-    { id:'z3', name:'Unstitched Lawn — 3 Piece', price:8200, img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&h=600&fit=crop&q=80', cat:'Womenswear' },
-    { id:'z4', name:'Dark Wash Denim Jacket', price:9800, img:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=500&h=600&fit=crop&q=80', cat:'Menswear' },
-    { id:'z5', name:'Kids Fleece Hoodie', price:4800, img:'https://images.unsplash.com/photo-1603252109303-27514432f5c3?w=500&h=600&fit=crop&q=80', cat:'Kids' },
-    { id:'z6', name:'Genuine Leather Belt', price:12000, img:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=500&h=600&fit=crop&q=80', cat:'Accessories' }
+  /* Same fallback dataset used on the homepage and Live Sell, so
+     product IDs line up wherever the shopper clicked in from. */
+  const FALLBACK_PRODUCTS = [
+    { id:'p1', name:'Export Overrun — Wool Blend Overcoat (Charcoal)', price:4200, original_price:14500, stock:4, image:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=700&h=700&fit=crop&q=80', category:'men', sku:'ZX-LEFT-WNTR-12', sizes:['M','L'], description:'Overrun from a European winter order. Same fabric and stitch line as the export shipment, minor label variance only.', material:'80% Wool, 20% Poly', origin:'Overrun — EU Order', condition:'new' },
+    { id:'p2', name:'Leftover Lawn Kurtas — Winter Cotton', price:1800, original_price:5500, stock:12, image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700&h=700&fit=crop&q=80', category:'women', sku:'ZX-LEFT-KRT-09', sizes:['S','M','L','XL'], description:'Unshipped balance from a domestic winter order, held back after the export cut was finalised.', material:'100% Cotton', origin:'Pakistan', condition:'new' },
+    { id:'p3', name:'Export Seconds — Running Shoes', price:3900, original_price:12000, stock:2, image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=700&h=700&fit=crop&q=80', category:'men', sku:'ZX-SEC-RUN-44', sizes:['8','9','10'], description:'Quality-control seconds pulled before container loading. Minor cosmetic marks only.', material:'Mesh & Rubber', origin:'Overrun — Seconds', condition:'refurbished' },
+    { id:'p4', name:'Unstitched Lawn — 3 Piece Export Cut', price:2400, original_price:8200, stock:8, image:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=700&h=700&fit=crop&q=80', category:'women', sku:'ZX-LEFT-LAWN-33', sizes:['Standard'], description:'Balance yardage from a summer export order, cut into complete 3-piece suits with dupatta.', material:'Lawn Cotton', origin:'Pakistan', condition:'new' },
+    { id:'p5', name:'Denim Jacket — Dark Wash Overrun', price:3200, original_price:9800, stock:15, image:'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=700&h=700&fit=crop&q=80', category:'men', sku:'ZX-LEFT-DEN-22', sizes:['S','M','L','XL'], description:'Overrun from a contracted denim order. Authentic wash and construction.', material:'100% Cotton Denim', origin:'Overrun Production', condition:'new' },
+    { id:'p6', name:'Export Leftover Tees — Bulk Lot', price:1100, original_price:4500, stock:3, image:'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=700&h=700&fit=crop&q=80', category:'men', sku:'ZX-LEFT-TEE-11', sizes:['M','L'], description:'Bulk leftover t-shirts from a completed export order.', material:'100% Pima Cotton', origin:'Export Leftover', condition:'new' },
+    { id:'p7', name:'Kids Winter Hoodies — Mixed Pack', price:1500, original_price:4800, stock:20, image:'https://images.unsplash.com/photo-1603252109303-27514432f5c3?w=700&h=700&fit=crop&q=80', category:'kids', sku:'ZX-LEFT-KID-07', sizes:['2-3Y','4-5Y','6-7Y'], description:'Overproduction from a children\u2019s winterwear order. Mixed colourway per pack.', material:'Fleece Cotton', origin:'Pakistan', condition:'new' },
+    { id:'p8', name:'Leather Belt — Export Defect (Buckle Scratch)', price:8500, original_price:45000, stock:1, image:'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=700&h=700&fit=crop&q=80', category:'accessories', sku:'ZX-SEC-BLT-01', sizes:['32-36','36-40'], description:'Genuine leather belt held back at final QC for a minor buckle scratch.', material:'Genuine Leather', origin:'Overrun — Defect', condition:'used' }
   ];
-  function zeloAddToCart(id) {
-    const p = ZELO_PRODUCTS.find(x => x.id === id);
-    if (!p) return;
-    const cart = Zelo.getCart();
-    const existing = cart.find(i => i.id === id);
-    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: p.price, img: p.img, qty: 1 });
-    Zelo.setCart(cart);
-    Zelo.showToast('Added to Cart', p.name);
-  }
-</script>
 
+  function priceOf(p) { return p.price; }
+  function origOf(p) { return p.original_price || p.originalPrice || p.price; }
+  function availabilityOf(p) { return p.stock > 0 ? 'InStock' : 'OutOfStock'; }
+  function conditionOf(p) {
+    const c = (p.condition || 'new').toLowerCase();
+    return c === 'used' ? 'UsedCondition' : c === 'refurbished' ? 'RefurbishedCondition' : 'NewCondition';
+  }
+
+  function injectStructuredData(p) {
+    const jsonld = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": p.name,
+      "image": [p.image],
+      "description": p.description || p.name,
+      "sku": p.sku || p.id,
+      "brand": { "@type": "Brand", "name": "Zainab Export" },
+      "offers": {
+        "@type": "Offer",
+        "url": window.location.href,
+        "priceCurrency": "PKR",
+        "price": priceOf(p),
+        "itemCondition": "https://schema.org/" + conditionOf(p),
+        "availability": "https://schema.org/" + availabilityOf(p)
+      }
+    };
+    document.getElementById('product-jsonld').textContent = JSON.stringify(jsonld);
+  }
+
+  function renderProductCardSmall(p) {
+    const price = priceOf(p), orig = origOf(p);
+    const pct = orig > price ? Math.round((1 - price / orig) * 100) : 0;
+    return `
+      <div class="pcard" onclick="window.location.href='product.html?id=${p.id}'">
+        <div class="pimg-wrap"><img src="${p.image}" loading="lazy"></div>
+        <div class="pinfo">
+          <div class="pbrand">Zainab Export</div>
+          <div class="pname">${p.name}</div>
+          <div class="pprice"><span class="price">Rs ${Number(price).toLocaleString()}</span>${pct>0?`<span class="price-strike">Rs ${Number(orig).toLocaleString()}</span>`:''}</div>
+        </div>
+      </div>`;
+  }
+
+  function renderProduct(p, allProducts) {
+    document.getElementById('page-title').textContent = p.name + ' — Zelo';
+    document.getElementById('page-desc').setAttribute('content', (p.description || p.name).slice(0, 155));
+    document.getElementById('page-canonical').setAttribute('href', window.location.origin + window.location.pathname + '?id=' + p.id);
+    document.getElementById('pdp-crumb').innerHTML = `<a href="index.html" style="color:var(--black);font-weight:700">All Products</a> / ${p.name}`;
+    injectStructuredData(p);
+
+    const price = priceOf(p), orig = origOf(p);
+    const pct = orig > price ? Math.round((1 - price / orig) * 100) : 0;
+    const inStock = p.stock > 0;
+    const sizes = p.sizes && p.sizes.length ? p.sizes : ['Standard'];
+
+    document.getElementById('product-mount').innerHTML = `
+      <div class="pdp-grid">
+        <div class="pdp-img"><img src="${p.image}" alt="${p.name}"></div>
+        <div>
+          <div class="flex-between" style="margin-bottom:8px">
+            <span class="badge badge-black">Zainab Export</span>
+            <span class="order-ref">SKU ${p.sku || p.id}</span>
+          </div>
+          <h1 style="font-size:24px;text-transform:none;margin-bottom:10px">${p.name}</h1>
+          <div class="flex gap-sm" style="align-items:baseline;margin-bottom:10px">
+            <span class="price" style="font-size:26px">Rs ${price.toLocaleString()}</span>
+            ${pct>0?`<span class="price-strike">Rs ${orig.toLocaleString()}</span><span class="badge badge-success">Save ${pct}%</span>`:''}
+          </div>
+          <div class="flex gap-sm" style="margin-bottom:16px">
+            <span class="badge ${inStock ? 'badge-success' : 'badge-red'}">${inStock ? 'In Stock' : 'Out of Stock'}</span>
+            <span class="badge badge-outline">${(p.condition||'new').replace(/^\w/, c => c.toUpperCase())}</span>
+            <span class="badge badge-outline">Cash on Delivery</span>
+          </div>
+          <p style="font-size:13.5px">${p.description || ''}</p>
+          <div class="grid grid-2" style="margin:16px 0">
+            <div class="card card-tight" style="border-radius:0"><span class="order-ref">Material</span><p style="margin:2px 0 0;font-weight:700;color:var(--black);font-size:13px">${p.material || '—'}</p></div>
+            <div class="card card-tight" style="border-radius:0"><span class="order-ref">Origin</span><p style="margin:2px 0 0;font-weight:700;color:var(--black);font-size:13px">${p.origin || '—'}</p></div>
+          </div>
+          <div class="field"><label>Size</label>
+            <select id="pdp-size" class="input" style="max-width:160px">
+              <option value="" selected disabled>Choose a size</option>
+              ${sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </div>
+          <div class="flex gap-sm">
+            <button class="btn btn-outline btn-block" ${inStock ? '' : 'disabled'} onclick="handleAddToCart()">Add to Cart</button>
+            <button class="btn btn-primary btn-block" ${inStock ? '' : 'disabled'} onclick="handleBuyNow()">Buy Now — COD</button>
+          </div>
+          <p class="order-ref" style="margin-top:14px">Same-day delivery in Lahore (DHA, Model Town, Johar Town) · Free warehouse pickup · Pay on delivery</p>
+        </div>
+      </div>
+    `;
+
+    window._currentProduct = p;
+
+    const related = allProducts.filter(x => x.id !== p.id).slice(0, 4);
+    if (related.length) {
+      document.getElementById('related-mount').innerHTML = `
+        <hr class="rule" style="margin-bottom:24px">
+        <h3 style="font-size:15px;text-transform:uppercase;letter-spacing:0.03em;margin-bottom:14px">You May Also Like</h3>
+        <div class="grid grid-4 grid-nolines">${related.map(renderProductCardSmall).join('')}</div>`;
+    }
+  }
+
+  function handleAddToCart() {
+    const size = document.getElementById('pdp-size').value;
+    if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
+    const p = window._currentProduct;
+    const cart = Zelo.getCart();
+    const existing = cart.find(i => i.id === p.id && i.size === size);
+    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: 1 });
+    Zelo.setCart(cart);
+    Zelo.openCartDrawer();
+  }
+  function handleBuyNow() {
+    const size = document.getElementById('pdp-size').value;
+    if (!size) { Zelo.showToast('Select a size', 'Choose a size before buying.'); return; }
+    const p = window._currentProduct;
+    const cart = Zelo.getCart();
+    const existing = cart.find(i => i.id === p.id && i.size === size);
+    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: 1 });
+    Zelo.setCart(cart);
+    window.location.href = 'checkout.html';
+  }
+
+  (async function init() {
+    const params = new URLSearchParams(window.location.search);
+    const pid = params.get('id');
+    let products = FALLBACK_PRODUCTS;
+    try {
+      const res = await Zelo.api.products();
+      if (res.products && res.products.length) products = res.products;
+    } catch (e) { /* fall back silently — sample data still lets the page work */ }
+
+    const p = products.find(x => x.id === pid) || products[0];
+    if (!p) {
+      document.getElementById('product-mount').innerHTML = '<p style="padding:60px 0;text-align:center;color:var(--ink-faint)">Product not found.</p>';
+      return;
+    }
+    renderProduct(p, products);
+  })();
+</script>
 </body>
 </html>

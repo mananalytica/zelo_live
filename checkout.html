@@ -11,7 +11,6 @@
 <body>
 <div id="site-header"></div>
 <main>
-
   <section class="page-hero container" style="padding-bottom:16px">
     <span class="eyebrow">Checkout</span>
     <h1>Almost there.</h1>
@@ -31,56 +30,85 @@
             <select class="input" id="c-payment"><option>Cash on Delivery</option><option>Bank Transfer</option></select>
           </div>
           <button class="btn btn-primary btn-block btn-lg" type="submit">Place Order</button>
+          <p class="order-ref" style="margin-top:12px">By placing this order you agree to our <a href="privacy-policy.html" style="color:var(--black);font-weight:700">Privacy Policy</a>. Items can be refused at the door before payment if they don't match what was shown live.</p>
         </form>
       </div>
       <div class="card">
         <h3>Order Summary</h3>
         <div id="cart-summary"></div>
-        <hr class="seam seam-tight">
-        <div class="flex-between"><span>Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
-        <div class="flex-between" style="margin-top:6px"><span>Delivery</span><span class="price mono">Rs 0</span></div>
-        <hr class="seam seam-tight">
-        <div class="flex-between"><strong>Total</strong><span class="price mono" id="c-total" style="font-size:18px">Rs 0</span></div>
+        <hr class="rule" style="margin:14px 0">
+        <div class="flex-between"><span style="font-size:13px">Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
+        <div class="flex-between" style="margin-top:8px"><span style="font-size:13px">Delivery</span><span class="price mono">Rs 0</span></div>
+        <hr class="rule" style="margin:14px 0">
+        <div class="flex-between"><strong style="font-size:13px;text-transform:uppercase;letter-spacing:0.03em">Total</strong><span class="price mono" id="c-total" style="font-size:18px">Rs 0</span></div>
+        <div class="flex gap-sm" style="margin-top:16px;flex-wrap:wrap">
+          <span class="badge badge-outline">Cash on Delivery</span>
+          <span class="badge badge-outline">Same-Day in Lahore</span>
+          <span class="badge badge-outline">Pay on Arrival</span>
+        </div>
       </div>
     </div>
   </section>
-  <script>
-    function renderCartSummary() {
-      const cart = Zelo.getCart();
-      const mount = document.getElementById('cart-summary');
-      if (!cart.length) {
-        mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="index.html" style="color:var(--black);font-weight:700">Browse products</a> or check out the current <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell</a>.</p>';
-        document.getElementById('c-subtotal').textContent = 'Rs 0';
-        document.getElementById('c-total').textContent = 'Rs 0';
-        return;
-      }
-      mount.innerHTML = cart.map(i => `
-        <div class="flex-between" style="margin-bottom:10px">
-          <span style="font-size:13.5px">${i.name} <span class="order-ref">×${i.qty}</span></span>
-          <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
-        </div>`).join('');
-      const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-      document.getElementById('c-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
-      document.getElementById('c-total').textContent = 'Rs ' + subtotal.toLocaleString();
-    }
-    function submitOrder(e) {
-      e.preventDefault();
-      const cart = Zelo.getCart();
-      if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
-      const ref = 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
-      sessionStorage.setItem('zelo_last_order', JSON.stringify({ ref, cart, total: cart.reduce((s,i)=>s+i.price*i.qty,0) }));
-      Zelo.setCart([]);
-      window.location.href = 'thank-you.html';
-      return false;
-    }
-    renderCartSummary();
-  </script>
-
 </main>
 <div id="site-footer"></div>
+
 <script src="script.js"></script>
 <script src="consent.js"></script>
 <script src="rudderstack.js"></script>
+<script>
+  function renderCartSummary() {
+    const cart = Zelo.getCart();
+    const mount = document.getElementById('cart-summary');
+    const submitBtn = document.querySelector('#checkout-form button[type=submit]');
+    if (!cart.length) {
+      mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="index.html" style="color:var(--black);font-weight:700">Browse products</a> or check out the current <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell</a>.</p>';
+      document.getElementById('c-subtotal').textContent = 'Rs 0';
+      document.getElementById('c-total').textContent = 'Rs 0';
+      if (submitBtn) submitBtn.disabled = true;
+      return;
+    }
+    if (submitBtn) submitBtn.disabled = false;
+    mount.innerHTML = cart.map(i => `
+      <div class="flex gap-md" style="align-items:flex-start;margin-bottom:14px">
+        <img src="${i.img || i.image || ''}" style="width:52px;height:64px;object-fit:cover;border:1px solid var(--line);flex-shrink:0">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--black)">${i.name}</div>
+          <div class="order-ref">${i.size ? 'Size ' + i.size + ' · ' : ''}Qty ${i.qty}</div>
+        </div>
+        <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
+      </div>`).join('');
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('c-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
+    document.getElementById('c-total').textContent = 'Rs ' + subtotal.toLocaleString();
+  }
 
+  function submitOrder(e) {
+    e.preventDefault();
+    const cart = Zelo.getCart();
+    if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
+    const order = {
+      ref: 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
+      placedAt: new Date().toISOString(),
+      customer: {
+        name: document.getElementById('c-name').value,
+        phone: document.getElementById('c-phone').value,
+        address: document.getElementById('c-address').value,
+        city: document.getElementById('c-city').value,
+        payment: document.getElementById('c-payment').value
+      },
+      cart,
+      total: cart.reduce((s, i) => s + i.price * i.qty, 0)
+    };
+    sessionStorage.setItem('zelo_last_order', JSON.stringify(order));
+    if (window.ZeloAnalytics) {
+      ZeloAnalytics.track('Order Completed', { order_id: order.ref, revenue: order.total, currency: 'PKR', products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty })) });
+    }
+    Zelo.setCart([]);
+    window.location.href = 'thank-you.html';
+    return false;
+  }
+
+  renderCartSummary();
+</script>
 </body>
 </html>
