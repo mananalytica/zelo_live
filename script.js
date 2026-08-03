@@ -18,7 +18,6 @@
   const NAV_LINKS = [
     { href: 'index.html', label: 'Shop' },
     { href: 'live-sell.html', label: 'Live Sell' },
-    { href: 'design-studio.html', label: 'Design Studio' },
     { href: 'contact.html', label: 'Contact' }
   ];
 
@@ -87,7 +86,6 @@
             <ul>
               <li><a href="index.html">All Products</a></li>
               <li><a href="live-sell.html">Live Sell</a></li>
-              <li><a href="design-studio.html">Design Studio</a></li>
             </ul>
           </div>
           <div>
