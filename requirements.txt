@@ -1,1 +1,4 @@
-duckdb
+fastapi
+duckdb==1.5.4
+pydantic
+rudder-sdk-python
