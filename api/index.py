@@ -28,6 +28,9 @@ ROUTES
   DELETE /api/products/{id}             admin  — remove a product
   GET    /api/live-feeds                public — list live/scheduled streams
   POST   /api/live-feeds                admin  — create/update a live feed
+  POST   /api/orders                    public — { customer info, items, subtotal, shipping, total } -> saves a placed order
+  GET    /api/orders                    admin  — list all orders, most recent first
+  PATCH  /api/orders/{id}               admin  — update order status (e.g. "fulfilled", "cancelled")
   POST   /api/contact                   public — { name, email, message }
   POST   /api/newsletter                public — { email }
   POST   /api/signup                    public — { name, phone, email, password } -> buyer account, used to "sign up to buy live"
@@ -67,6 +70,7 @@ if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", MD_DATABASE):
     raise RuntimeError("MD_DATABASE must be a plain identifier (letters, numbers, underscore).")
 
 PRODUCT_ID_RE = re.compile(r"^/api/products/([A-Za-z0-9_-]+)$")
+ORDER_ID_RE = re.compile(r"^/api/orders/([A-Za-z0-9_-]+)$")
 LIVE_FEED_ROUTE = "/api/live-feeds"
 
 _bootstrapped = False  # per-process cache so we don't re-run CREATE TABLE on every request
@@ -118,6 +122,27 @@ def bootstrap(con):
             viewers INTEGER,
             thumbnail VARCHAR,
             started_at TIMESTAMP DEFAULT current_timestamp
+        )
+    """)
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+            id VARCHAR PRIMARY KEY,
+            customer_name VARCHAR,
+            email VARCHAR,
+            phone VARCHAR,
+            country VARCHAR,
+            address VARCHAR,
+            city VARCHAR,
+            province VARCHAR,
+            postal_code VARCHAR,
+            shipping_method VARCHAR,
+            payment_method VARCHAR,
+            items VARCHAR,
+            subtotal DOUBLE,
+            shipping DOUBLE,
+            total DOUBLE,
+            status VARCHAR DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT current_timestamp
         )
     """)
     con.execute("""
@@ -231,6 +256,23 @@ class handler(BaseHTTPRequestHandler):
                 rows = con.execute(f"SELECT {','.join(cols)} FROM live_feeds WHERE status = 'live' ORDER BY started_at DESC").fetchall()
                 self._send(200, {"feeds": [dict(zip(cols, r)) for r in rows]})
                 return
+            if path == "/api/orders":
+                if not self._require_admin():
+                    return
+                con = get_connection()
+                cols = ["id","customer_name","email","phone","country","address","city","province","postal_code",
+                        "shipping_method","payment_method","items","subtotal","shipping","total","status","created_at"]
+                rows = con.execute(f"SELECT {','.join(cols)} FROM orders ORDER BY created_at DESC").fetchall()
+                orders = []
+                for r in rows:
+                    o = dict(zip(cols, r))
+                    try:
+                        o["items"] = json.loads(o["items"]) if o["items"] else []
+                    except (TypeError, json.JSONDecodeError):
+                        o["items"] = []
+                    orders.append(o)
+                self._send(200, {"orders": orders})
+                return
             self._send(404, {"error": "not found"})
         except Exception as e:
             self._db_error(e)
@@ -286,6 +328,28 @@ class handler(BaseHTTPRequestHandler):
                 self._send(200, {"status": "saved", "id": fid})
                 return
 
+            if path == "/api/orders":
+                data = self._body_json()
+                items = data.get("items") or data.get("cart") or []
+                if not items:
+                    self._send(400, {"error": "order must include at least one item"}); return
+                order_id = data.get("id") or data.get("ref") or ("ZL-" + uuid.uuid4().hex[:8].upper())
+                con = get_connection()
+                con.execute(
+                    """INSERT OR REPLACE INTO orders
+                       (id, customer_name, email, phone, country, address, city, province, postal_code,
+                        shipping_method, payment_method, items, subtotal, shipping, total, status)
+                       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                    [order_id, data.get("customer_name") or data.get("name",""), data.get("email",""), data.get("phone",""),
+                     data.get("country",""), data.get("address",""), data.get("city",""), data.get("province",""),
+                     data.get("postal_code") or data.get("postalCode",""), data.get("shipping_method") or data.get("shippingMethod",""),
+                     data.get("payment_method") or data.get("payment",""), json.dumps(items),
+                     float(data.get("subtotal") or 0), float(data.get("shipping") or 0), float(data.get("total") or 0),
+                     data.get("status", "pending")]
+                )
+                self._send(200, {"status": "created", "order_id": order_id})
+                return
+
             if path == "/api/contact":
                 data = self._body_json()
                 if not data.get("name") or not data.get("message"):
@@ -337,6 +401,23 @@ class handler(BaseHTTPRequestHandler):
 
     def do_PATCH(self):
         path = self.path.split("?")[0]
+
+        order_match = ORDER_ID_RE.match(path)
+        if order_match:
+            if not self._require_admin():
+                return
+            try:
+                oid = order_match.group(1)
+                data = self._body_json()
+                if "status" not in data:
+                    self._send(400, {"error": "no fields to update (expected 'status')"}); return
+                con = get_connection()
+                con.execute("UPDATE orders SET status = ? WHERE id = ?", [data["status"], oid])
+                self._send(200, {"status": "updated", "id": oid})
+            except Exception as e:
+                self._db_error(e)
+            return
+
         m = PRODUCT_ID_RE.match(path)
         if not m:
             self._send(404, {"error": "not found"}); return

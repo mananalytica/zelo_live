@@ -666,6 +666,14 @@ function renderAdmin(root) {
       </div>
     </div>
 
+    <div class="card" style="border-radius:0;margin-bottom:24px">
+      <div class="flex-between" style="margin-bottom:10px">
+        <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:0.03em;margin:0">Recent Orders</h4>
+        <button class="btn btn-outline btn-sm" onclick="loadAdminOrders()">Refresh</button>
+      </div>
+      <div id="admin-orders-mount"><p class="order-ref">Loading orders…</p></div>
+    </div>
+
     <div class="card" style="border-radius:0">
       <div class="flex-between" style="margin-bottom:10px">
         <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:0.03em;margin:0">Products (${app.products.length})</h4>
@@ -683,6 +691,40 @@ function renderAdmin(root) {
   ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('active'); }));
   dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('active'); if (e.dataTransfer.files[0]) readAndImportCsv(e.dataTransfer.files[0]); });
   fi.addEventListener('change', e => { if (e.target.files[0]) readAndImportCsv(e.target.files[0]); });
+  if (hasKey) loadAdminOrders();
+}
+function loadAdminOrders() {
+  const mount = document.getElementById('admin-orders-mount');
+  if (!mount) return;
+  mount.innerHTML = '<p class="order-ref">Loading orders…</p>';
+  Zelo.api.getOrders()
+    .then(res => {
+      const orders = res.orders || [];
+      if (!orders.length) { mount.innerHTML = '<p class="order-ref">No orders yet.</p>'; return; }
+      mount.innerHTML = `
+        <table class="admin-table">
+          <thead><tr><th>Order</th><th>Customer</th><th>City</th><th>Items</th><th>Total</th><th>Status</th><th>Placed</th></tr></thead>
+          <tbody>${orders.map(o => `
+            <tr>
+              <td class="mono">${o.id}</td>
+              <td>${o.customer_name || '—'}<br><span class="order-ref">${o.phone || ''}</span></td>
+              <td>${o.city || '—'}</td>
+              <td>${(o.items || []).reduce((s,i) => s + (i.qty||1), 0)} item(s)</td>
+              <td class="price">Rs ${Number(o.total || 0).toLocaleString()}</td>
+              <td><select class="input mono" style="padding:6px 8px" onchange="updateOrderStatus('${o.id}', this.value)">
+                ${['pending','confirmed','fulfilled','cancelled'].map(s => `<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`).join('')}
+              </select></td>
+              <td class="order-ref">${o.created_at ? new Date(o.created_at).toLocaleString() : ''}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+    })
+    .catch(err => { mount.innerHTML = `<p class="order-ref" style="color:var(--red)">Could not load orders — ${err.data && err.data.error ? err.data.error : 'check your admin key.'}</p>`; });
+}
+function updateOrderStatus(id, status) {
+  Zelo.api.updateOrderStatus(id, status)
+    .then(() => Zelo.showToast('Order Updated', id + ' marked as ' + status))
+    .catch(err => Zelo.showToast('Update failed', err.data && err.data.error ? err.data.error : 'Check your admin key.'));
 }
 function adminRow(p) {
   return `<tr>

@@ -179,31 +179,46 @@
     document.getElementById('c-total').textContent = 'Rs ' + (subtotal + SHIP_COST).toLocaleString();
   }
 
-  function submitOrder(e) {
+  async function submitOrder(e) {
     e.preventDefault();
     const cart = currentCart();
     if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const order = {
-      ref: 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
-      placedAt: new Date().toISOString(),
-      customer: {
-        email: document.getElementById('c-email').value,
-        name: (document.getElementById('c-first').value + ' ' + document.getElementById('c-last').value).trim(),
-        country: document.getElementById('c-country').value,
-        address: document.getElementById('c-address1').value + (document.getElementById('c-address2').value ? ', ' + document.getElementById('c-address2').value : ''),
-        city: document.getElementById('c-city').value,
-        province: document.getElementById('c-province').value,
-        postalCode: document.getElementById('c-postal').value,
-        phone: document.getElementById('c-phone').value,
-        shippingMethod: document.querySelector('input[name=ship]:checked').value,
-        payment: document.querySelector('input[name=pay]:checked').value
-      },
-      cart,
-      shipping: SHIP_COST,
-      subtotal,
-      total: subtotal + SHIP_COST
+    const ref = 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+    const customer = {
+      email: document.getElementById('c-email').value,
+      name: (document.getElementById('c-first').value + ' ' + document.getElementById('c-last').value).trim(),
+      country: document.getElementById('c-country').value,
+      address: document.getElementById('c-address1').value + (document.getElementById('c-address2').value ? ', ' + document.getElementById('c-address2').value : ''),
+      city: document.getElementById('c-city').value,
+      province: document.getElementById('c-province').value,
+      postalCode: document.getElementById('c-postal').value,
+      phone: document.getElementById('c-phone').value,
+      shippingMethod: document.querySelector('input[name=ship]:checked').value,
+      payment: document.querySelector('input[name=pay]:checked').value
     };
+    const order = { ref, placedAt: new Date().toISOString(), customer, cart, shipping: SHIP_COST, subtotal, total: subtotal + SHIP_COST };
+
+    const submitBtn = document.querySelector('#checkout-form button[type=submit]');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Placing Order…'; }
+
+    try {
+      await Zelo.api.createOrder({
+        id: ref,
+        customer_name: customer.name, email: customer.email, phone: customer.phone,
+        country: customer.country, address: customer.address, city: customer.city,
+        province: customer.province, postal_code: customer.postalCode,
+        shipping_method: customer.shippingMethod, payment_method: customer.payment,
+        items: cart, subtotal, shipping: SHIP_COST, total: order.total
+      });
+    } catch (err) {
+      // Don't block the customer's confirmation on a backend hiccup — the
+      // order details still live in sessionStorage for the thank-you page.
+      // Do surface it so you notice orders aren't actually saving.
+      console.error('[orders] failed to save order to backend:', err);
+      Zelo.showToast('Order placed', 'Confirmed locally — could not reach the order database, check API logs.');
+    }
+
     sessionStorage.setItem('zelo_last_order', JSON.stringify(order));
     Zelo.ecommerce.purchase(order);
     Zelo.setCart([]);

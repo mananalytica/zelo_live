@@ -257,7 +257,10 @@
     contact: (payload) => apiSend('/api/contact', 'POST', payload, false),
     newsletter: (email) => apiSend('/api/newsletter', 'POST', { email }, false),
     signup: (payload) => apiSend('/api/signup', 'POST', payload, false),
-    login: (payload) => apiSend('/api/login', 'POST', payload, false)
+    login: (payload) => apiSend('/api/login', 'POST', payload, false),
+    createOrder: (payload) => apiSend('/api/orders', 'POST', payload, false),
+    getOrders: () => apiSend('/api/orders', 'GET', null, true),
+    updateOrderStatus: (id, status) => apiSend('/api/orders/' + id, 'PATCH', { status }, true)
   };
 
   window.zeloNewsletterSubmit = function (e, form) {
