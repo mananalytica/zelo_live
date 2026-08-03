@@ -82,7 +82,7 @@
           <div class="pay-option" style="margin-top:8px" onclick="selectRadio(this,'ship')">
             <input type="radio" name="ship" value="standard">
             <div style="flex:1"><div style="font-size:13px;font-weight:600">Standard — Nationwide</div><div class="order-ref">2–4 business days</div></div>
-            <span class="price">Rs 250</span>
+            <span class="price" id="c-standard-ship-price">Rs 250</span>
           </div>
         </div>
 
@@ -107,6 +107,7 @@
     <div class="checkout-summary-col">
       <div class="sticky-summary">
         <div id="cart-summary"></div>
+        <div id="checkout-shipbar" style="margin:14px 0"></div>
         <hr class="rule" style="margin:16px 0">
         <div class="field" style="margin-bottom:14px">
           <div class="flex gap-sm"><input class="input" placeholder="Discount code" style="flex:1"><button type="button" class="btn btn-outline btn-sm">Apply</button></div>
@@ -137,7 +138,7 @@
     el.querySelector('input').checked = true;
     const cart = currentCart();
     if (group === 'ship') {
-      SHIP_COST = el.querySelector('input').value === 'standard' ? 250 : 0;
+      SHIP_COST = computeShipCost(el.querySelector('input').value, cart);
       updateTotals();
       if (cart.length) Zelo.ecommerce.addShippingInfo(cart, el.querySelector('input').value);
     }
@@ -146,12 +147,19 @@
     }
   }
 
+  function computeShipCost(method, cart) {
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    if (subtotal >= Zelo.FREE_SHIPPING_THRESHOLD) return 0; // free shipping, any method, once threshold is met
+    return method === 'standard' ? 250 : 0; // same-day stays free as a location perk either way
+  }
+
   function currentCart() { return Zelo.getCart(); }
 
   function renderCartSummary() {
     const cart = currentCart();
     const mount = document.getElementById('cart-summary');
     const submitBtn = document.querySelector('#checkout-form button[type=submit]');
+    document.getElementById('checkout-shipbar').innerHTML = Zelo.freeShippingBarHTML(cart);
     if (!cart.length) {
       mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="index.html" style="color:var(--black);font-weight:700">Browse products</a> or check out the current <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell</a>.</p>';
       if (submitBtn) submitBtn.disabled = true;
@@ -168,6 +176,13 @@
         </div>
         <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
       </div>`).join('');
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const standardPriceEl = document.getElementById('c-standard-ship-price');
+    if (standardPriceEl) standardPriceEl.textContent = subtotal >= Zelo.FREE_SHIPPING_THRESHOLD ? 'Free' : 'Rs 250';
+    const checkedShip = document.querySelector('input[name=ship]:checked');
+    SHIP_COST = computeShipCost(checkedShip ? checkedShip.value : 'same-day', cart);
+
     updateTotals();
   }
 

@@ -36,7 +36,8 @@
       </div>
       <div class="card" id="cart-summary-card" style="position:sticky;top:90px">
         <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.03em">Order Summary</h3>
-        <div class="flex-between" style="margin:14px 0"><span style="font-size:13px">Subtotal</span><span class="price" id="cart-subtotal">Rs 0</span></div>
+        <div id="cart-shipbar" style="margin:14px 0"></div>
+        <div class="flex-between" style="margin-bottom:14px"><span style="font-size:13px">Subtotal</span><span class="price" id="cart-subtotal">Rs 0</span></div>
         <p class="order-ref" style="margin-bottom:16px">Shipping and delivery options are calculated at checkout.</p>
         <a href="checkout.html" class="btn btn-primary btn-block btn-lg" id="cart-checkout-btn">Proceed to Checkout</a>
         <a href="index.html" class="btn btn-outline btn-block" style="margin-top:8px">Continue Shopping</a>
@@ -90,6 +91,7 @@
 
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     document.getElementById('cart-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
+    document.getElementById('cart-shipbar').innerHTML = Zelo.freeShippingBarHTML(cart);
   }
 
   function changeQty(idx, delta) {

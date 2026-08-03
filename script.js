@@ -113,6 +113,14 @@
   }
 
   function injectChrome() {
+    if (!document.getElementById('zelo-promo-bar')) {
+      const bar = document.createElement('div');
+      bar.id = 'zelo-promo-bar';
+      bar.className = 'promo-bar';
+      bar.innerHTML = `<div class="container"><span>Free Shipping on Orders Over <strong>Rs 5,000</strong> · Cash on Delivery Available</span></div>`;
+      document.body.insertBefore(bar, document.body.firstChild);
+    }
+
     const headerMount = document.getElementById('site-header');
     const footerMount = document.getElementById('site-footer');
     if (headerMount) { headerMount.className = 'site-header'; headerMount.innerHTML = headerHTML(); }
@@ -154,6 +162,7 @@
             <button class="icon-btn" id="zelo-cart-close" aria-label="Close cart">✕</button>
           </div>
           <div id="zelo-cart-drawer-items" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px"></div>
+          <div id="zelo-cart-drawer-shipbar" style="margin-top:14px"></div>
           <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:14px">
             <div class="flex-between" style="margin-bottom:12px"><strong style="font-size:12.5px;text-transform:uppercase;letter-spacing:0.04em">Subtotal</strong><span class="price" id="zelo-cart-drawer-subtotal" style="font-size:15px"></span></div>
             <a href="cart.html" class="btn btn-outline btn-block" style="margin-bottom:8px">View Full Cart</a>
@@ -168,6 +177,19 @@
     }
 
     updateCartBadge();
+  }
+
+  /* ---- Free shipping progress — shared across cart drawer, cart.html, checkout.html ---- */
+  const FREE_SHIPPING_THRESHOLD = 5000;
+  function freeShippingBarHTML(cart) {
+    if (!cart || !cart.length) return '';
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+    if (remaining <= 0) {
+      return `<div class="ship-progress met"><p class="ship-progress-msg">✓ You've unlocked Free Shipping</p><div class="ship-progress-track"><div class="ship-progress-fill" style="width:100%"></div></div></div>`;
+    }
+    const pct = Math.max(4, Math.min(100, Math.round((subtotal / FREE_SHIPPING_THRESHOLD) * 100)));
+    return `<div class="ship-progress"><p class="ship-progress-msg">You're <strong>Rs ${remaining.toLocaleString()}</strong> away from Free Shipping</p><div class="ship-progress-track"><div class="ship-progress-fill" style="width:${pct}%"></div></div></div>`;
   }
 
   /* ---- Toast ---- */
@@ -200,7 +222,9 @@
     const cart = getCart();
     const itemsMount = document.getElementById('zelo-cart-drawer-items');
     const subtotalMount = document.getElementById('zelo-cart-drawer-subtotal');
+    const shipbarMount = document.getElementById('zelo-cart-drawer-shipbar');
     if (!itemsMount || !subtotalMount) return;
+    if (shipbarMount) shipbarMount.innerHTML = freeShippingBarHTML(cart);
     if (!cart.length) {
       itemsMount.innerHTML = `<p style="font-size:13px;color:var(--ink-soft)">Your cart is empty.</p>`;
       subtotalMount.textContent = 'Rs 0';
@@ -350,7 +374,7 @@
     }
   };
 
-  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api, ecommerce };
+  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api, ecommerce, FREE_SHIPPING_THRESHOLD, freeShippingBarHTML };
 
   document.addEventListener('DOMContentLoaded', injectChrome);
 })();
