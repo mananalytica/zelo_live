@@ -148,14 +148,18 @@ p { line-height: 1.65; margin: 0 0 1em; color: var(--ink-soft); }
 .order-ref { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-soft); letter-spacing: 0.02em; }
 
 /* Product grid card (SSENSE-style: image, then tiny caps text block) */
-.pcard { background: #fff; cursor: pointer; }
+.pcard { background: #fff; cursor: pointer; display: flex; flex-direction: column; height: 100%; }
 .pcard .pimg-wrap { position: relative; aspect-ratio: 3/4; background: var(--stone); overflow: hidden; }
 .pcard .pimg-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
 .pcard:hover .pimg-wrap img { transform: scale(1.03); }
-.pcard .pinfo { padding: 12px 2px; }
+.pcard .pinfo { padding: 12px 2px; display: flex; flex-direction: column; flex: 1; }
 .pcard .pbrand { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); margin-bottom: 2px; }
-.pcard .pname { font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; line-height: 1.4; }
-.pcard .pprice { display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; }
+.pcard .pname {
+  font-size: 12.5px; color: var(--ink-soft); margin-bottom: 6px; line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  min-height: calc(1.4em * 2);
+}
+.pcard .pprice { display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; flex-wrap: wrap; margin-top: auto; }
 
 /* ============================================================
    FORMS

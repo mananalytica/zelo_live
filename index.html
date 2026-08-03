@@ -21,10 +21,11 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
   .feeds-strip { display: flex; gap: 1px; background: var(--line); overflow-x: auto; }
-  .feed-card { flex: 0 0 260px; background: #fff; cursor: pointer; }
+  .feed-card { flex: 0 0 260px; background: #fff; cursor: pointer; display: flex; flex-direction: column; }
   .feed-card .fimg { position: relative; aspect-ratio: 16/9; background: var(--stone); overflow: hidden; }
   .feed-card .fimg img { width: 100%; height: 100%; object-fit: cover; }
-  .feed-card .finfo { padding: 12px; }
+  .feed-card .finfo { padding: 12px; flex: 1; }
+  .feed-card .ftitle { font-weight: 700; font-size: 12.5px; color: var(--black); margin-bottom: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: calc(1.35em * 2); }
 
   .catalog-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 24px 0; }
   #catalog-status { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -104,7 +105,7 @@
     const price = p.price, orig = p.original_price || p.originalPrice || p.price;
     const pct = orig > price ? Math.round((1 - price / orig) * 100) : 0;
     return `
-      <div class="pcard" onclick="window.location.href='product.html?id=${p.id}'">
+      <div class="pcard" onclick="trackAndGo('${p.id}')">
         <div class="pimg-wrap">
           <img src="${p.image}" loading="lazy">
           ${p.stock <= 3 ? '<span class="badge badge-red" style="position:absolute;top:8px;left:8px">Low Stock</span>' : ''}
@@ -118,6 +119,14 @@
           </div>
         </div>
       </div>`;
+  }
+
+  function trackAndGo(pid) {
+    const p = ALL_PRODUCTS.find(x => x.id === pid);
+    if (window.ZeloAnalytics && p) {
+      ZeloAnalytics.track('Product Clicked', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category, currency: 'PKR' });
+    }
+    window.location.href = 'product.html?id=' + pid;
   }
 
   function renderProducts(list) {
@@ -138,15 +147,25 @@
           <span class="badge badge-red" style="position:absolute;top:8px;left:8px"><span class="live-dot" style="width:5px;height:5px;background:#fff"></span> Live</span>
         </div>
         <div class="finfo">
-          <div style="font-weight:700;font-size:12.5px;color:var(--black);margin-bottom:2px">${f.title}</div>
+          <div class="ftitle">${f.title}</div>
           <div class="order-ref">${f.host} · ${(f.viewers||0).toLocaleString()} watching</div>
         </div>
       </a>`;
   }
 
   Zelo.api.products()
-    .then(res => { ALL_PRODUCTS = res.products && res.products.length ? res.products : FALLBACK_PRODUCTS; document.getElementById('catalog-status').textContent = res.products && res.products.length ? 'LIVE FROM DATABASE' : 'SAMPLE DATA — CONNECT API'; renderProducts(ALL_PRODUCTS); })
-    .catch(() => { ALL_PRODUCTS = FALLBACK_PRODUCTS; document.getElementById('catalog-status').textContent = 'SAMPLE DATA — CONNECT API'; renderProducts(ALL_PRODUCTS); });
+    .then(res => {
+      ALL_PRODUCTS = res.products && res.products.length ? res.products : FALLBACK_PRODUCTS;
+      document.getElementById('catalog-status').textContent = res.products && res.products.length ? 'LIVE FROM DATABASE' : 'SAMPLE DATA — CONNECT API';
+      renderProducts(ALL_PRODUCTS);
+      if (window.ZeloAnalytics) ZeloAnalytics.track('Product List Viewed', { list_id: 'homepage_catalog', currency: 'PKR', products: ALL_PRODUCTS.map(p => ({ product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category })) });
+    })
+    .catch(() => {
+      ALL_PRODUCTS = FALLBACK_PRODUCTS;
+      document.getElementById('catalog-status').textContent = 'SAMPLE DATA — CONNECT API';
+      renderProducts(ALL_PRODUCTS);
+      if (window.ZeloAnalytics) ZeloAnalytics.track('Product List Viewed', { list_id: 'homepage_catalog', currency: 'PKR', products: ALL_PRODUCTS.map(p => ({ product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category })) });
+    });
 
   Zelo.api.liveFeeds()
     .then(res => { const feeds = res.feeds && res.feeds.length ? res.feeds : FALLBACK_FEEDS; document.getElementById('feeds-status').textContent = res.feeds && res.feeds.length ? '' : 'Sample feed'; document.getElementById('feeds-strip').innerHTML = feeds.map(renderFeedCard).join(''); })

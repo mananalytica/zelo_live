@@ -5,50 +5,122 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Checkout — Zelo</title>
 <meta name="description" content="Review your order and place it with Cash on Delivery.">
+<meta name="robots" content="noindex">
 <link rel="icon" href="assets/logo-original-square.png">
 <link rel="stylesheet" href="styles.css">
+<style>
+  .checkout-shell { display: grid; grid-template-columns: 1.15fr 0.85fr; min-height: 100vh; }
+  @media (max-width: 900px) { .checkout-shell { grid-template-columns: 1fr; } }
+  .checkout-form-col { padding: 40px 48px 80px; max-width: 560px; margin-left: auto; }
+  @media (max-width: 900px) { .checkout-form-col { margin: 0 auto; padding: 28px 20px 60px; max-width: 100%; } }
+  .checkout-summary-col { background: var(--stone); padding: 40px 48px; border-left: 1px solid var(--line); }
+  @media (max-width: 900px) { .checkout-summary-col { border-left: none; border-bottom: 1px solid var(--line); padding: 24px 20px; order: -1; } }
+  .co-step { margin-bottom: 30px; }
+  .co-step-title { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--black); margin-bottom: 12px; }
+  .co-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .co-row3 { display: grid; grid-template-columns: 1.4fr 0.8fr 0.8fr; gap: 12px; }
+  @media (max-width: 520px) { .co-row2, .co-row3 { grid-template-columns: 1fr; } }
+  .pay-option { border: 1px solid var(--line-strong); padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .pay-option.selected { border-color: var(--black); background: #fff; }
+  .pay-option input { accent-color: var(--black); }
+  .co-summary-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+  .co-summary-item img { width: 56px; height: 68px; object-fit: cover; border: 1px solid var(--line); flex-shrink: 0; }
+  .co-qty-badge { position: relative; }
+  .co-qty-badge span { position: absolute; top: -8px; right: -8px; background: var(--ink-soft); color: #fff; font-family: var(--font-mono); font-size: 9.5px; width: 17px; height: 17px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .sticky-summary { position: sticky; top: 90px; }
+</style>
 </head>
 <body>
 <div id="site-header"></div>
 <main>
-  <section class="page-hero container" style="padding-bottom:16px">
-    <span class="eyebrow">Checkout</span>
-    <h1>Almost there.</h1>
-  </section>
-  <section class="container section-tight">
-    <div class="grid grid-2" style="align-items:start">
-      <div class="card">
-        <h3>Delivery Details</h3>
-        <form id="checkout-form" onsubmit="return submitOrder(event)">
-          <div class="field"><label>Full Name</label><input class="input" id="c-name" type="text" required></div>
-          <div class="field"><label>Phone Number</label><input class="input mono" id="c-phone" type="tel" placeholder="03XX-XXXXXXX" required></div>
-          <div class="field"><label>Delivery Address</label><textarea class="input" id="c-address" rows="3" required></textarea></div>
-          <div class="field"><label>City</label>
-            <select class="input" id="c-city"><option>Lahore</option><option>Karachi</option><option>Islamabad</option><option>Other</option></select>
+  <div class="checkout-shell">
+    <div class="checkout-form-col">
+      <nav class="order-ref" style="margin-bottom:20px"><a href="index.html" style="color:var(--black);font-weight:700">Zelo</a> / Checkout</nav>
+
+      <form id="checkout-form" onsubmit="return submitOrder(event)">
+        <div class="co-step">
+          <div class="co-step-title"><span>Contact</span><a href="account.html" style="font-weight:600;color:var(--ink-soft);text-transform:none;font-size:12px">Already have an account? Sign in</a></div>
+          <div class="field"><input class="input" id="c-email" type="email" placeholder="Email" required></div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft)">
+            <input type="checkbox" id="c-news" checked style="accent-color:var(--black)"> Email me with news and offers
+          </label>
+        </div>
+
+        <div class="co-step">
+          <div class="co-step-title"><span>Delivery</span></div>
+          <div class="field">
+            <select class="input" id="c-country">
+              <option>Pakistan</option>
+              <option>United Arab Emirates</option>
+              <option>Saudi Arabia</option>
+              <option>United Kingdom</option>
+              <option>United States</option>
+            </select>
           </div>
-          <div class="field"><label>Payment</label>
-            <select class="input" id="c-payment"><option>Cash on Delivery</option><option>Bank Transfer</option></select>
+          <div class="co-row2">
+            <div class="field"><input class="input" id="c-first" type="text" placeholder="First name" required></div>
+            <div class="field"><input class="input" id="c-last" type="text" placeholder="Last name" required></div>
           </div>
-          <button class="btn btn-primary btn-block btn-lg" type="submit">Place Order</button>
-          <p class="order-ref" style="margin-top:12px">By placing this order you agree to our <a href="privacy-policy.html" style="color:var(--black);font-weight:700">Privacy Policy</a>. Items can be refused at the door before payment if they don't match what was shown live.</p>
-        </form>
-      </div>
-      <div class="card">
-        <h3>Order Summary</h3>
+          <div class="field"><input class="input" id="c-address1" type="text" placeholder="Address" required></div>
+          <div class="field"><input class="input" id="c-address2" type="text" placeholder="Apartment, suite, floor (optional)"></div>
+          <div class="co-row3">
+            <div class="field"><input class="input" id="c-city" type="text" placeholder="City" required></div>
+            <div class="field"><input class="input" id="c-province" type="text" placeholder="Province" required></div>
+            <div class="field"><input class="input mono" id="c-postal" type="text" placeholder="Postal code" required></div>
+          </div>
+          <div class="field"><input class="input mono" id="c-phone" type="tel" placeholder="Phone (03XX-XXXXXXX)" required></div>
+        </div>
+
+        <div class="co-step">
+          <div class="co-step-title"><span>Shipping Method</span></div>
+          <div class="pay-option selected" onclick="selectRadio(this,'ship')">
+            <input type="radio" name="ship" value="same-day" checked>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Same-Day Delivery — Lahore</div><div class="order-ref">DHA, Model Town, Johar Town, Gulberg</div></div>
+            <span class="price">Free</span>
+          </div>
+          <div class="pay-option" style="margin-top:8px" onclick="selectRadio(this,'ship')">
+            <input type="radio" name="ship" value="standard">
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Standard — Nationwide</div><div class="order-ref">2–4 business days</div></div>
+            <span class="price">Rs 250</span>
+          </div>
+        </div>
+
+        <div class="co-step">
+          <div class="co-step-title"><span>Payment</span></div>
+          <p class="order-ref" style="margin-bottom:10px">All transactions are secure. Pay when your order arrives.</p>
+          <div class="pay-option selected" onclick="selectRadio(this,'pay')">
+            <input type="radio" name="pay" value="Cash on Delivery" checked>
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Cash on Delivery</div><div class="order-ref">Pay in cash when it arrives</div></div>
+          </div>
+          <div class="pay-option" style="margin-top:8px" onclick="selectRadio(this,'pay')">
+            <input type="radio" name="pay" value="Bank Transfer">
+            <div style="flex:1"><div style="font-size:13px;font-weight:600">Bank Transfer</div><div class="order-ref">Details sent after order confirmation</div></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="submit">Complete Order</button>
+        <p class="order-ref" style="margin-top:14px;line-height:1.6">By completing your purchase you agree to our <a href="privacy-policy.html" style="color:var(--black);font-weight:700">Privacy Policy</a>. Items can be refused at the door before payment if they don't match what was shown live.</p>
+      </form>
+    </div>
+
+    <div class="checkout-summary-col">
+      <div class="sticky-summary">
         <div id="cart-summary"></div>
+        <hr class="rule" style="margin:16px 0">
+        <div class="field" style="margin-bottom:14px">
+          <div class="flex gap-sm"><input class="input" placeholder="Discount code" style="flex:1"><button type="button" class="btn btn-outline btn-sm">Apply</button></div>
+        </div>
+        <div class="flex-between" style="margin-bottom:8px"><span style="font-size:13px">Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
+        <div class="flex-between" style="margin-bottom:8px"><span style="font-size:13px">Shipping</span><span class="price mono" id="c-shipping">Free</span></div>
         <hr class="rule" style="margin:14px 0">
-        <div class="flex-between"><span style="font-size:13px">Subtotal</span><span class="price mono" id="c-subtotal">Rs 0</span></div>
-        <div class="flex-between" style="margin-top:8px"><span style="font-size:13px">Delivery</span><span class="price mono">Rs 0</span></div>
-        <hr class="rule" style="margin:14px 0">
-        <div class="flex-between"><strong style="font-size:13px;text-transform:uppercase;letter-spacing:0.03em">Total</strong><span class="price mono" id="c-total" style="font-size:18px">Rs 0</span></div>
-        <div class="flex gap-sm" style="margin-top:16px;flex-wrap:wrap">
+        <div class="flex-between"><strong style="font-size:14px;text-transform:uppercase;letter-spacing:0.03em">Total</strong><span class="price" id="c-total" style="font-size:20px">Rs 0</span></div>
+        <div class="flex gap-sm" style="margin-top:18px;flex-wrap:wrap">
           <span class="badge badge-outline">Cash on Delivery</span>
-          <span class="badge badge-outline">Same-Day in Lahore</span>
-          <span class="badge badge-outline">Pay on Arrival</span>
+          <span class="badge badge-outline">Genuine Export Stock</span>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 </main>
 <div id="site-footer"></div>
 
@@ -56,52 +128,80 @@
 <script src="consent.js"></script>
 <script src="rudderstack.js"></script>
 <script>
+  let SHIP_COST = 0;
+
+  function selectRadio(el, group) {
+    document.querySelectorAll(`.pay-option input[name="${group}"]`).forEach(i => i.closest('.pay-option').classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
+    if (group === 'ship') { SHIP_COST = el.querySelector('input').value === 'standard' ? 250 : 0; updateTotals(); }
+  }
+
+  function currentCart() { return Zelo.getCart(); }
+
   function renderCartSummary() {
-    const cart = Zelo.getCart();
+    const cart = currentCart();
     const mount = document.getElementById('cart-summary');
     const submitBtn = document.querySelector('#checkout-form button[type=submit]');
     if (!cart.length) {
       mount.innerHTML = '<p style="font-size:13px">Your cart is empty. <a href="index.html" style="color:var(--black);font-weight:700">Browse products</a> or check out the current <a href="live-sell.html" style="color:var(--black);font-weight:700">Live Sell</a>.</p>';
-      document.getElementById('c-subtotal').textContent = 'Rs 0';
-      document.getElementById('c-total').textContent = 'Rs 0';
       if (submitBtn) submitBtn.disabled = true;
+      updateTotals();
       return;
     }
     if (submitBtn) submitBtn.disabled = false;
     mount.innerHTML = cart.map(i => `
-      <div class="flex gap-md" style="align-items:flex-start;margin-bottom:14px">
-        <img src="${i.img || i.image || ''}" style="width:52px;height:64px;object-fit:cover;border:1px solid var(--line);flex-shrink:0">
+      <div class="co-summary-item">
+        <div class="co-qty-badge"><img src="${i.img || i.image || ''}"><span>${i.qty}</span></div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;color:var(--black)">${i.name}</div>
-          <div class="order-ref">${i.size ? 'Size ' + i.size + ' · ' : ''}Qty ${i.qty}</div>
+          <div class="order-ref">${i.size ? 'Size ' + i.size : ''}</div>
         </div>
         <span class="price mono">Rs ${(i.price * i.qty).toLocaleString()}</span>
       </div>`).join('');
+    updateTotals();
+  }
+
+  function updateTotals() {
+    const cart = currentCart();
     const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     document.getElementById('c-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
-    document.getElementById('c-total').textContent = 'Rs ' + subtotal.toLocaleString();
+    document.getElementById('c-shipping').textContent = SHIP_COST > 0 ? 'Rs ' + SHIP_COST.toLocaleString() : 'Free';
+    document.getElementById('c-total').textContent = 'Rs ' + (subtotal + SHIP_COST).toLocaleString();
   }
 
   function submitOrder(e) {
     e.preventDefault();
-    const cart = Zelo.getCart();
+    const cart = currentCart();
     if (!cart.length) { Zelo.showToast('Cart is empty', 'Add something before checking out.'); return false; }
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const order = {
       ref: 'ZL-' + Math.random().toString(36).slice(2, 8).toUpperCase(),
       placedAt: new Date().toISOString(),
       customer: {
-        name: document.getElementById('c-name').value,
-        phone: document.getElementById('c-phone').value,
-        address: document.getElementById('c-address').value,
+        email: document.getElementById('c-email').value,
+        name: (document.getElementById('c-first').value + ' ' + document.getElementById('c-last').value).trim(),
+        country: document.getElementById('c-country').value,
+        address: document.getElementById('c-address1').value + (document.getElementById('c-address2').value ? ', ' + document.getElementById('c-address2').value : ''),
         city: document.getElementById('c-city').value,
-        payment: document.getElementById('c-payment').value
+        province: document.getElementById('c-province').value,
+        postalCode: document.getElementById('c-postal').value,
+        phone: document.getElementById('c-phone').value,
+        shippingMethod: document.querySelector('input[name=ship]:checked').value,
+        payment: document.querySelector('input[name=pay]:checked').value
       },
       cart,
-      total: cart.reduce((s, i) => s + i.price * i.qty, 0)
+      shipping: SHIP_COST,
+      subtotal,
+      total: subtotal + SHIP_COST
     };
     sessionStorage.setItem('zelo_last_order', JSON.stringify(order));
+
     if (window.ZeloAnalytics) {
-      ZeloAnalytics.track('Order Completed', { order_id: order.ref, revenue: order.total, currency: 'PKR', products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty })) });
+      ZeloAnalytics.track('Order Completed', {
+        order_id: order.ref, revenue: order.total, shipping: order.shipping, currency: 'PKR',
+        products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
+      });
     }
     Zelo.setCart([]);
     window.location.href = 'thank-you.html';
@@ -109,6 +209,15 @@
   }
 
   renderCartSummary();
+
+  // "Checkout Started" fires once, on load, if there's something to check out.
+  if (window.ZeloAnalytics && currentCart().length) {
+    const cart = currentCart();
+    ZeloAnalytics.track('Checkout Started', {
+      revenue: cart.reduce((s, i) => s + i.price * i.qty, 0), currency: 'PKR',
+      products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
+    });
+  }
 </script>
 </body>
 </html>

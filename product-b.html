@@ -118,6 +118,10 @@
 
     window._currentProduct = p;
 
+    if (window.ZeloAnalytics) {
+      ZeloAnalytics.track('Product Viewed', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: price, category: p.category, brand: 'Zainab Export', currency: 'PKR' });
+    }
+
     const related = allProducts.filter(x => x.id !== p.id).slice(0, 4);
     if (related.length) {
       document.getElementById('related-mount').innerHTML = `
@@ -135,6 +139,7 @@
     const existing = cart.find(i => i.id === p.id && i.size === size);
     if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: 1 });
     Zelo.setCart(cart);
+    if (window.ZeloAnalytics) ZeloAnalytics.track('Product Added', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), quantity: 1, variant: size, currency: 'PKR' });
     Zelo.openCartDrawer();
   }
   function handleBuyNow() {

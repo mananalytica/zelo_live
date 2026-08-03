@@ -29,7 +29,7 @@
       <div id="ty-items" style="margin-bottom:14px"></div>
       <hr class="rule" style="margin:14px 0">
       <div class="flex-between" style="margin-bottom:6px"><span style="font-size:13px">Subtotal</span><span class="price mono" id="ty-subtotal">Rs 0</span></div>
-      <div class="flex-between" style="margin-bottom:6px"><span style="font-size:13px">Delivery</span><span class="price mono">Rs 0</span></div>
+      <div class="flex-between" style="margin-bottom:6px"><span style="font-size:13px">Delivery</span><span class="price mono" id="ty-shipping">Free</span></div>
       <hr class="rule" style="margin:14px 0">
       <div class="flex-between"><strong style="font-size:13px;text-transform:uppercase;letter-spacing:0.03em">Total</strong><span class="price" id="ty-total" style="font-size:18px">Rs 0</span></div>
 
@@ -66,16 +66,19 @@
         </div>
         <span class="price mono">Rs ${(i.price*i.qty).toLocaleString()}</span>
       </div>`).join('');
-    document.getElementById('ty-subtotal').textContent = 'Rs ' + order.total.toLocaleString();
+    document.getElementById('ty-subtotal').textContent = 'Rs ' + (order.subtotal || order.total).toLocaleString();
+    document.getElementById('ty-shipping').textContent = order.shipping ? 'Rs ' + order.shipping.toLocaleString() : 'Free';
     document.getElementById('ty-total').textContent = 'Rs ' + order.total.toLocaleString();
 
     if (order.customer) {
       const c = order.customer;
       document.getElementById('ty-customer').innerHTML = `
         <strong style="color:var(--black)">${c.name || ''}</strong><br>
-        ${c.address || ''}${c.address ? ',' : ''} ${c.city || ''}<br>
-        ${c.phone || ''}<br>
-        Payment: ${c.payment || 'Cash on Delivery'}`;
+        ${c.address || ''}<br>
+        ${c.city || ''}${c.city && c.province ? ', ' : ''}${c.province || ''} ${c.postalCode || ''}<br>
+        ${c.country || ''}<br>
+        ${c.phone || ''}${c.email ? ' · ' + c.email : ''}<br>
+        <span style="color:var(--black)">${c.shippingMethod === 'standard' ? 'Standard Delivery (2–4 days)' : 'Same-Day Delivery — Lahore'}</span> · Payment: ${c.payment || 'Cash on Delivery'}`;
     }
   } else {
     document.getElementById('ty-ref').textContent = 'No recent order found';

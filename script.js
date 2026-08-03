@@ -220,6 +220,12 @@
     }
     const d = document.getElementById('zelo-cart-drawer');
     if (d) d.classList.add('open');
+    if (window.ZeloAnalytics && cart.length) {
+      ZeloAnalytics.track('Cart Viewed', {
+        cart_id: 'zelo_cart', currency: 'PKR',
+        products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
+      });
+    }
   }
 
   /* ---- Buyer session (from /api/signup or /api/login) ---- */
