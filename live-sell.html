@@ -6,6 +6,7 @@
 <title>Live Sell — Zelo | Unstitched Suits &amp; Laces</title>
 <meta name="description" content="Watch the live, sign up, and buy it now — genuine export-leftover unstitched suits and laces from Zainab Export, sold live with cash on delivery.">
 <link rel="icon" href="assets/logo-original-square.png">
+<script src="datalayer.js"></script>
 <link rel="stylesheet" href="styles.css">
 <style>
   .ls-ticker { background: #FFFFFF; color: var(--black); overflow: hidden; white-space: nowrap; padding: 9px 0; border-bottom: 1px solid var(--line); }
@@ -295,7 +296,7 @@ function addToCartCore(pid, size, qty) {
   if (existing) existing.qty += (qty || 1);
   else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: qty || 1 });
   Zelo.setCart(cart);
-  if (window.ZeloAnalytics) ZeloAnalytics.track('Product Added', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), quantity: qty || 1, variant: size, currency: 'PKR' });
+  if (window.Zelo && Zelo.ecommerce) Zelo.ecommerce.addToCart({ id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), qty: qty || 1, size, category: p.category });
   return true;
 }
 function addLiveToCart(pid, size, qty) {
@@ -426,6 +427,7 @@ function renderLive(root) {
     </div>
   `;
   initLiveInteractions();
+  if (window.Zelo && Zelo.ecommerce) Zelo.ecommerce.viewItemList(app.products, 'live_sell_lots');
 }
 
 function renderCurrentLot(p) {
@@ -531,9 +533,7 @@ function renderProduct(root, id) {
     <h3 style="font-size:15px;text-transform:uppercase;letter-spacing:0.03em">You May Also Like</h3>
     <div class="lots-grid">${app.products.filter(x=>x.id!==p.id).slice(0,4).map(renderLotCard).join('')}</div>
   `;
-  if (window.ZeloAnalytics) {
-    ZeloAnalytics.track('Product Viewed', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: price, category: p.category, brand: 'Zainab Export', currency: 'PKR' });
-  }
+  if (window.Zelo && Zelo.ecommerce) Zelo.ecommerce.viewItem(p);
 }
 
 /* ============================================================

@@ -42,7 +42,7 @@
           <a href="account.html" class="icon-btn" aria-label="Sign In / Sign Up">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
           </a>
-          <a href="checkout.html" class="icon-btn" aria-label="Cart">
+          <a href="cart.html" class="icon-btn" aria-label="Cart">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.4 12.4a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L22 8H6"/><circle cx="10" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>
             <span class="cart-count" id="zelo-cart-count" style="display:none">0</span>
           </a>
@@ -64,7 +64,7 @@
         </div>
         ${links}
         <a href="account.html">Sign In / Sign Up</a>
-        <a href="checkout.html">Cart</a>
+        <a href="cart.html">Cart</a>
       </div>`;
   }
 
@@ -92,7 +92,7 @@
             <h5>Account</h5>
             <ul>
               <li><a href="account.html">Sign In / Sign Up</a></li>
-              <li><a href="checkout.html">Cart</a></li>
+              <li><a href="cart.html">Cart</a></li>
               <li><a href="admin.html">Admin</a></li>
             </ul>
           </div>
@@ -156,6 +156,7 @@
           <div id="zelo-cart-drawer-items" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px"></div>
           <div style="border-top:1px solid var(--line);padding-top:14px;margin-top:14px">
             <div class="flex-between" style="margin-bottom:12px"><strong style="font-size:12.5px;text-transform:uppercase;letter-spacing:0.04em">Subtotal</strong><span class="price" id="zelo-cart-drawer-subtotal" style="font-size:15px"></span></div>
+            <a href="cart.html" class="btn btn-outline btn-block" style="margin-bottom:8px">View Full Cart</a>
             <a href="checkout.html" class="btn btn-primary btn-block">Begin Checkout</a>
             <button class="btn btn-outline btn-block" id="zelo-cart-continue" style="margin-top:8px">Continue Shopping</button>
           </div>
@@ -218,12 +219,7 @@
     }
     const d = document.getElementById('zelo-cart-drawer');
     if (d) d.classList.add('open');
-    if (window.ZeloAnalytics && cart.length) {
-      ZeloAnalytics.track('Cart Viewed', {
-        cart_id: 'zelo_cart', currency: 'PKR',
-        products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
-      });
-    }
+    if (cart.length) ecommerce.viewCart(cart);
   }
 
   /* ---- Buyer session (from /api/signup or /api/login) ---- */
@@ -273,7 +269,85 @@
     return false;
   };
 
-  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api };
+  /* ---- Ecommerce tracking: fires BOTH GA4/GTM dataLayer events
+     (standard Enhanced Ecommerce schema) AND RudderStack/Segment
+     events from one call site, so every page only needs to call
+     Zelo.ecommerce.* instead of hand-building two payloads. ---- */
+  function toGA4Item(i) {
+    return {
+      item_id: i.id || i.product_id,
+      item_name: i.name,
+      price: i.price,
+      quantity: i.qty || i.quantity || 1,
+      item_variant: i.size || i.variant || undefined,
+      item_category: i.category || undefined,
+      item_brand: 'Zainab Export'
+    };
+  }
+  function pushGA4(event, ecommerce) {
+    if (!window.dataLayer) return;
+    window.dataLayer.push({ ecommerce: null }); // clear previous ecommerce object per GA4 best practice
+    window.dataLayer.push({ event, ecommerce });
+  }
+  function trackSegment(event, props) {
+    if (window.ZeloAnalytics) ZeloAnalytics.track(event, props);
+  }
+  const ecommerce = {
+    viewItemList: function (products, listId) {
+      pushGA4('view_item_list', { item_list_id: listId, items: products.map(toGA4Item) });
+      trackSegment('Product List Viewed', { list_id: listId, currency: 'PKR', products: products.map(p => ({ product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category })) });
+    },
+    selectItem: function (product, listId) {
+      pushGA4('select_item', { item_list_id: listId, items: [toGA4Item(product)] });
+      trackSegment('Product Clicked', { product_id: product.id, sku: product.sku || product.id, name: product.name, price: product.price, category: product.category, currency: 'PKR' });
+    },
+    viewItem: function (product) {
+      pushGA4('view_item', { currency: 'PKR', value: product.price, items: [toGA4Item(product)] });
+      trackSegment('Product Viewed', { product_id: product.id, sku: product.sku || product.id, name: product.name, price: product.price, category: product.category, brand: 'Zainab Export', currency: 'PKR' });
+    },
+    addToCart: function (item) {
+      pushGA4('add_to_cart', { currency: 'PKR', value: item.price * (item.qty || 1), items: [toGA4Item(item)] });
+      trackSegment('Product Added', { product_id: item.id, sku: item.sku || item.id, name: item.name, price: item.price, quantity: item.qty || 1, variant: item.size, currency: 'PKR' });
+    },
+    removeFromCart: function (item) {
+      pushGA4('remove_from_cart', { currency: 'PKR', value: item.price * (item.qty || 1), items: [toGA4Item(item)] });
+      trackSegment('Product Removed', { product_id: item.id, sku: item.sku || item.id, name: item.name, price: item.price, quantity: item.qty || 1, variant: item.size, currency: 'PKR' });
+    },
+    viewCart: function (cart) {
+      if (!cart.length) return;
+      const value = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      pushGA4('view_cart', { currency: 'PKR', value, items: cart.map(toGA4Item) });
+      trackSegment('Cart Viewed', { cart_id: 'zelo_cart', currency: 'PKR', products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size })) });
+    },
+    beginCheckout: function (cart) {
+      if (!cart.length) return;
+      const value = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      pushGA4('begin_checkout', { currency: 'PKR', value, items: cart.map(toGA4Item) });
+      trackSegment('Checkout Started', { revenue: value, currency: 'PKR', products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size })) });
+    },
+    addShippingInfo: function (cart, shippingTier) {
+      const value = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      pushGA4('add_shipping_info', { currency: 'PKR', value, shipping_tier: shippingTier, items: cart.map(toGA4Item) });
+      trackSegment('Shipping Info Entered', { shipping_method: shippingTier, currency: 'PKR', revenue: value });
+    },
+    addPaymentInfo: function (cart, paymentType) {
+      const value = cart.reduce((s, i) => s + i.price * i.qty, 0);
+      pushGA4('add_payment_info', { currency: 'PKR', value, payment_type: paymentType, items: cart.map(toGA4Item) });
+      trackSegment('Payment Info Entered', { payment_method: paymentType, currency: 'PKR', revenue: value });
+    },
+    purchase: function (order) {
+      pushGA4('purchase', {
+        transaction_id: order.ref, currency: 'PKR', value: order.total,
+        shipping: order.shipping || 0, items: order.cart.map(toGA4Item)
+      });
+      trackSegment('Order Completed', {
+        order_id: order.ref, revenue: order.total, shipping: order.shipping || 0, currency: 'PKR',
+        products: order.cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
+      });
+    }
+  };
+
+  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api, ecommerce };
 
   document.addEventListener('DOMContentLoaded', injectChrome);
 })();

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Cart — Zelo</title>
+<meta name="description" content="Review your cart before checkout.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo-original-square.png">
+<script src="datalayer.js"></script>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .cart-line { display: grid; grid-template-columns: 90px 1fr auto auto; gap: 16px; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--line); }
+  @media (max-width: 600px) { .cart-line { grid-template-columns: 70px 1fr; grid-template-areas: "img info" "img qty" "img total"; row-gap: 6px; } }
+  .cart-line img { width: 90px; height: 112px; object-fit: cover; border: 1px solid var(--line); }
+  @media (max-width: 600px) { .cart-line img { width: 70px; height: 88px; } }
+  .qty-stepper { display: inline-flex; align-items: center; border: 1px solid var(--line-strong); }
+  .qty-stepper button { width: 30px; height: 30px; border: none; background: none; font-size: 14px; cursor: pointer; color: var(--black); }
+  .qty-stepper span { width: 30px; text-align: center; font-family: var(--font-mono); font-size: 12.5px; }
+  .remove-link { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); background: none; border: none; cursor: pointer; padding: 0; margin-top: 6px; }
+  .remove-link:hover { color: var(--red); }
+  .empty-cart { text-align: center; padding: 70px 20px; }
+</style>
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+  <section class="page-hero container" style="padding-bottom:16px">
+    <span class="eyebrow">Cart</span>
+    <h1>Your Cart</h1>
+  </section>
+  <section class="container section-tight">
+    <div class="grid grid-2" style="align-items:start;background:transparent;gap:32px" id="cart-layout">
+      <div>
+        <div id="cart-lines"></div>
+      </div>
+      <div class="card" id="cart-summary-card" style="position:sticky;top:90px">
+        <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:0.03em">Order Summary</h3>
+        <div class="flex-between" style="margin:14px 0"><span style="font-size:13px">Subtotal</span><span class="price" id="cart-subtotal">Rs 0</span></div>
+        <p class="order-ref" style="margin-bottom:16px">Shipping and delivery options are calculated at checkout.</p>
+        <a href="checkout.html" class="btn btn-primary btn-block btn-lg" id="cart-checkout-btn">Proceed to Checkout</a>
+        <a href="index.html" class="btn btn-outline btn-block" style="margin-top:8px">Continue Shopping</a>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="site-footer"></div>
+
+<script src="script.js"></script>
+<script src="consent.js"></script>
+<script src="rudderstack.js"></script>
+<script>
+  function render() {
+    const cart = Zelo.getCart();
+    const linesMount = document.getElementById('cart-lines');
+    const layout = document.getElementById('cart-layout');
+
+    if (!cart.length) {
+      layout.style.gridTemplateColumns = '1fr';
+      linesMount.innerHTML = `
+        <div class="empty-cart">
+          <p style="font-size:15px;color:var(--black);font-weight:600;margin-bottom:8px">Your cart is empty</p>
+          <p style="margin-bottom:20px">Browse the catalog or catch the current live sell.</p>
+          <div class="flex gap-md" style="justify-content:center">
+            <a href="index.html" class="btn btn-primary">Browse Products</a>
+            <a href="live-sell.html" class="btn btn-outline">Watch Live Sell</a>
+          </div>
+        </div>`;
+      document.getElementById('cart-summary-card').style.display = 'none';
+      return;
+    }
+
+    document.getElementById('cart-summary-card').style.display = 'block';
+    linesMount.innerHTML = cart.map((i, idx) => `
+      <div class="cart-line">
+        <img src="${i.img || i.image || ''}" alt="${i.name}">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--black)">${i.name}</div>
+          <div class="order-ref" style="margin-bottom:6px">${i.size ? 'Size ' + i.size : ''}</div>
+          <div class="qty-stepper">
+            <button onclick="changeQty(${idx}, -1)" aria-label="Decrease quantity">–</button>
+            <span>${i.qty}</span>
+            <button onclick="changeQty(${idx}, 1)" aria-label="Increase quantity">+</button>
+          </div>
+          <div><button class="remove-link" onclick="removeLine(${idx})">Remove</button></div>
+        </div>
+        <div></div>
+        <div class="price" style="font-size:14px;white-space:nowrap">Rs ${(i.price * i.qty).toLocaleString()}</div>
+      </div>`).join('');
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('cart-subtotal').textContent = 'Rs ' + subtotal.toLocaleString();
+  }
+
+  function changeQty(idx, delta) {
+    const cart = Zelo.getCart();
+    const item = cart[idx];
+    if (!item) return;
+    item.qty = Math.max(1, (item.qty || 1) + delta);
+    Zelo.setCart(cart);
+    render();
+  }
+
+  function removeLine(idx) {
+    const cart = Zelo.getCart();
+    const item = cart[idx];
+    if (!item) return;
+    cart.splice(idx, 1);
+    Zelo.setCart(cart);
+    if (window.Zelo && Zelo.ecommerce) Zelo.ecommerce.removeFromCart(item);
+    render();
+  }
+
+  render();
+  const initialCart = Zelo.getCart();
+  if (initialCart.length && window.Zelo && Zelo.ecommerce) Zelo.ecommerce.viewCart(initialCart);
+</script>
+</body>
+</html>

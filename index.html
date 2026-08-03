@@ -6,6 +6,7 @@
 <title>Zelo — Unstitched Fabric &amp; Laces, Genuine Export Leftover</title>
 <meta name="description" content="Zelo Live Sell — genuine export-leftover unstitched suits and laces from Zainab Export, sold live from the warehouse floor. Watch the feed, shop the drop, cash on delivery.">
 <link rel="icon" href="assets/logo-original-square.png">
+<script src="datalayer.js"></script>
 <link rel="stylesheet" href="styles.css">
 <style>
   .hero { padding: 40px 0 0; border-bottom: 1px solid var(--line); }
@@ -213,9 +214,7 @@
 
   function trackAndGo(pid) {
     const p = ALL_PRODUCTS.find(x => x.id === pid);
-    if (window.ZeloAnalytics && p) {
-      ZeloAnalytics.track('Product Clicked', { product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category, currency: 'PKR' });
-    }
+    if (p) Zelo.ecommerce.selectItem(p, 'homepage_catalog');
     window.location.href = 'product.html?id=' + pid;
   }
 
@@ -248,13 +247,13 @@
       ALL_PRODUCTS = res.products && res.products.length ? res.products : FALLBACK_PRODUCTS;
       document.getElementById('catalog-status').textContent = res.products && res.products.length ? 'LIVE FROM DATABASE' : 'SAMPLE DATA — CONNECT API';
       renderProducts(ALL_PRODUCTS);
-      if (window.ZeloAnalytics) ZeloAnalytics.track('Product List Viewed', { list_id: 'homepage_catalog', currency: 'PKR', products: ALL_PRODUCTS.map(p => ({ product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category })) });
+      Zelo.ecommerce.viewItemList(ALL_PRODUCTS, 'homepage_catalog');
     })
     .catch(() => {
       ALL_PRODUCTS = FALLBACK_PRODUCTS;
       document.getElementById('catalog-status').textContent = 'SAMPLE DATA — CONNECT API';
       renderProducts(ALL_PRODUCTS);
-      if (window.ZeloAnalytics) ZeloAnalytics.track('Product List Viewed', { list_id: 'homepage_catalog', currency: 'PKR', products: ALL_PRODUCTS.map(p => ({ product_id: p.id, sku: p.sku || p.id, name: p.name, price: p.price, category: p.category })) });
+      Zelo.ecommerce.viewItemList(ALL_PRODUCTS, 'homepage_catalog');
     });
 
   Zelo.api.liveFeeds()

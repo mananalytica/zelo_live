@@ -7,6 +7,7 @@
 <meta name="description" content="Review your order and place it with Cash on Delivery.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="assets/logo-original-square.png">
+<script src="datalayer.js"></script>
 <link rel="stylesheet" href="styles.css">
 <style>
   .checkout-shell { display: grid; grid-template-columns: 1.15fr 0.85fr; min-height: 100vh; }
@@ -134,7 +135,15 @@
     document.querySelectorAll(`.pay-option input[name="${group}"]`).forEach(i => i.closest('.pay-option').classList.remove('selected'));
     el.classList.add('selected');
     el.querySelector('input').checked = true;
-    if (group === 'ship') { SHIP_COST = el.querySelector('input').value === 'standard' ? 250 : 0; updateTotals(); }
+    const cart = currentCart();
+    if (group === 'ship') {
+      SHIP_COST = el.querySelector('input').value === 'standard' ? 250 : 0;
+      updateTotals();
+      if (cart.length) Zelo.ecommerce.addShippingInfo(cart, el.querySelector('input').value);
+    }
+    if (group === 'pay' && cart.length) {
+      Zelo.ecommerce.addPaymentInfo(cart, el.querySelector('input').value);
+    }
   }
 
   function currentCart() { return Zelo.getCart(); }
@@ -196,13 +205,7 @@
       total: subtotal + SHIP_COST
     };
     sessionStorage.setItem('zelo_last_order', JSON.stringify(order));
-
-    if (window.ZeloAnalytics) {
-      ZeloAnalytics.track('Order Completed', {
-        order_id: order.ref, revenue: order.total, shipping: order.shipping, currency: 'PKR',
-        products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
-      });
-    }
+    Zelo.ecommerce.purchase(order);
     Zelo.setCart([]);
     window.location.href = 'thank-you.html';
     return false;
@@ -211,13 +214,7 @@
   renderCartSummary();
 
   // "Checkout Started" fires once, on load, if there's something to check out.
-  if (window.ZeloAnalytics && currentCart().length) {
-    const cart = currentCart();
-    ZeloAnalytics.track('Checkout Started', {
-      revenue: cart.reduce((s, i) => s + i.price * i.qty, 0), currency: 'PKR',
-      products: cart.map(i => ({ product_id: i.id, name: i.name, price: i.price, quantity: i.qty, variant: i.size }))
-    });
-  }
+  if (currentCart().length) Zelo.ecommerce.beginCheckout(currentCart());
 </script>
 </body>
 </html>
