@@ -71,9 +71,19 @@
         <button data-cat="unstitched">Unstitched Suits</button>
         <button data-cat="lace">Laces &amp; Trims</button>
       </div>
-      <span id="catalog-status">Loading products…</span>
+      <div class="flex-between" style="gap:14px;flex-wrap:wrap">
+        <div style="position:relative;min-width:220px">
+          <input type="search" id="product-search" class="input" placeholder="Search products…" style="padding-left:34px" autocomplete="off">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-faint)"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <span id="catalog-status">Loading products…</span>
+      </div>
     </div>
     <div class="grid grid-5 grid-nolines" id="product-grid"></div>
+    <p id="catalog-empty" style="display:none;text-align:center;padding:40px 0;color:var(--ink-faint)">No products match your search.</p>
+    <div style="text-align:center;padding:32px 0 8px">
+      <button id="load-more-btn" class="btn btn-outline" style="display:none">Load More</button>
+    </div>
   </section>
 </main>
 
@@ -191,6 +201,10 @@
   ];
 
   let ALL_PRODUCTS = [];
+  const PAGE_SIZE = 12; // products shown per "page" — tweak between 10-15 as needed
+  let currentCategory = 'all';
+  let currentQuery = '';
+  let visibleCount = PAGE_SIZE;
 
   function renderProductCard(p) {
     const price = p.price, orig = p.original_price || p.originalPrice || p.price;
@@ -218,15 +232,56 @@
     window.location.href = 'product.html?id=' + pid;
   }
 
-  function renderProducts(list) {
-    document.getElementById('product-grid').innerHTML = list.map(renderProductCard).join('');
+  function getFilteredProducts() {
+    let list = currentCategory === 'all' ? ALL_PRODUCTS : ALL_PRODUCTS.filter(p => p.category === currentCategory);
+    if (currentQuery) {
+      const q = currentQuery;
+      list = list.filter(p =>
+        (p.name || '').toLowerCase().includes(q) ||
+        (p.material || '').toLowerCase().includes(q) ||
+        (p.category || '').toLowerCase().includes(q) ||
+        (p.sku || '').toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }
+
+  function renderProducts() {
+    const filtered = getFilteredProducts();
+    const visible = filtered.slice(0, visibleCount);
+    document.getElementById('product-grid').innerHTML = visible.map(renderProductCard).join('');
+    document.getElementById('catalog-empty').style.display = filtered.length ? 'none' : 'block';
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (visibleCount < filtered.length) {
+      loadMoreBtn.style.display = 'inline-flex';
+      loadMoreBtn.textContent = `Load More (${filtered.length - visibleCount} remaining)`;
+    } else {
+      loadMoreBtn.style.display = 'none';
+    }
   }
 
   function filterCategory(cat) {
+    currentCategory = cat;
+    visibleCount = PAGE_SIZE;
     document.querySelectorAll('#category-filters button').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
-    renderProducts(cat === 'all' ? ALL_PRODUCTS : ALL_PRODUCTS.filter(p => p.category === cat));
+    renderProducts();
   }
   document.querySelectorAll('#category-filters button').forEach(b => b.addEventListener('click', () => filterCategory(b.dataset.cat)));
+
+  document.getElementById('load-more-btn').addEventListener('click', () => {
+    visibleCount += PAGE_SIZE;
+    renderProducts();
+  });
+
+  let searchDebounce;
+  document.getElementById('product-search').addEventListener('input', (e) => {
+    clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      currentQuery = e.target.value.trim().toLowerCase();
+      visibleCount = PAGE_SIZE;
+      renderProducts();
+    }, 150);
+  });
 
   function renderFeedCard(f) {
     return `
@@ -246,13 +301,13 @@
     .then(res => {
       ALL_PRODUCTS = res.products && res.products.length ? res.products : FALLBACK_PRODUCTS;
       document.getElementById('catalog-status').textContent = res.products && res.products.length ? 'LIVE FROM DATABASE' : 'SAMPLE DATA — CONNECT API';
-      renderProducts(ALL_PRODUCTS);
+      renderProducts();
       Zelo.ecommerce.viewItemList(ALL_PRODUCTS, 'homepage_catalog');
     })
     .catch(() => {
       ALL_PRODUCTS = FALLBACK_PRODUCTS;
       document.getElementById('catalog-status').textContent = 'SAMPLE DATA — CONNECT API';
-      renderProducts(ALL_PRODUCTS);
+      renderProducts();
       Zelo.ecommerce.viewItemList(ALL_PRODUCTS, 'homepage_catalog');
     });
 
