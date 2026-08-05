@@ -18,6 +18,7 @@
   const NAV_LINKS = [
     { href: 'index.html', label: 'Shop' },
     { href: 'live-sell.html', label: 'Live Sell' },
+    { href: 'about.html', label: 'About' },
     { href: 'contact.html', label: 'Contact' }
   ];
 
@@ -99,9 +100,11 @@
           <div>
             <h5>Company</h5>
             <ul>
+              <li><a href="about.html">About Us</a></li>
               <li><a href="contact.html">Contact</a></li>
               <li><a href="privacy-policy.html">Privacy Policy</a></li>
               <li><a href="cookie-policy.html">Cookie Policy</a></li>
+              <li><a href="data-deletion.html">Data Deletion</a></li>
             </ul>
           </div>
         </div>
