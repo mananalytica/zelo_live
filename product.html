@@ -199,6 +199,14 @@
       </div>`;
   }
 
+  function stitchStatus(p) {
+    if (typeof p.stitched === 'boolean') return p.stitched ? 'Stitched' : 'Unstitched';
+    if (p.category === 'unstitched') return 'Unstitched';
+    if (p.sizes && p.sizes.some(s => /unstitched/i.test(s))) return 'Unstitched';
+    if (p.category === 'lace') return 'Trim — Not Stitched';
+    return 'Stitched';
+  }
+
   function renderProduct(p, allProducts) {
     document.getElementById('page-title').textContent = p.name + ' — Zelo';
     document.getElementById('page-desc').setAttribute('content', (p.description || p.name).slice(0, 155));
@@ -210,6 +218,7 @@
     const pct = orig > price ? Math.round((1 - price / orig) * 100) : 0;
     const inStock = p.stock > 0;
     const sizes = p.sizes && p.sizes.length ? p.sizes : ['Standard'];
+    const hasSizeChoice = sizes.length > 1; // e.g. lace sold by the metre — a real choice. A single-entry list ("Unstitched") isn't a real choice, so we show a Type box instead.
 
     const images = Zelo.productImages(p);
 
@@ -244,16 +253,18 @@
             <span class="badge badge-outline">Cash on Delivery</span>
           </div>
           <p style="font-size:13.5px">${p.description || ''}</p>
-          <div class="grid grid-2" style="margin:16px 0">
+          <div class="grid ${hasSizeChoice ? 'grid-2' : 'grid-3'}" style="margin:16px 0">
+            ${hasSizeChoice ? '' : `<div class="card card-tight" style="border-radius:0"><span class="order-ref">Type</span><p style="margin:2px 0 0;font-weight:700;color:var(--black);font-size:13px">${stitchStatus(p)}</p></div>`}
             <div class="card card-tight" style="border-radius:0"><span class="order-ref">Material</span><p style="margin:2px 0 0;font-weight:700;color:var(--black);font-size:13px">${p.material || '—'}</p></div>
             <div class="card card-tight" style="border-radius:0"><span class="order-ref">Origin</span><p style="margin:2px 0 0;font-weight:700;color:var(--black);font-size:13px">${p.origin || '—'}</p></div>
           </div>
+          ${hasSizeChoice ? `
           <div class="field"><label>Size</label>
             <select id="pdp-size" class="input" style="max-width:160px">
               <option value="" selected disabled>Choose a size</option>
               ${sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
             </select>
-          </div>
+          </div>` : ''}
           <div class="flex gap-sm">
             <button class="btn btn-outline btn-block" ${inStock ? '' : 'disabled'} onclick="handleAddToCart()">Add to Cart</button>
             <button class="btn btn-primary btn-block" ${inStock ? '' : 'disabled'} onclick="handleBuyNow()">Buy Now — COD</button>
@@ -289,10 +300,16 @@
   }
   function stepImage(delta) { setMainImage((window._currentImageIdx || 0) + delta); }
 
+  function resolveSize(p) {
+    const sizeEl = document.getElementById('pdp-size');
+    if (sizeEl) return sizeEl.value; // real choice (e.g. lace length) — must be selected
+    return (p.sizes && p.sizes[0]) || 'Standard'; // no real choice — use the single implied value (e.g. "Unstitched")
+  }
+
   function handleAddToCart() {
-    const size = document.getElementById('pdp-size').value;
-    if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
     const p = window._currentProduct;
+    const size = resolveSize(p);
+    if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
     const cart = Zelo.getCart();
     const existing = cart.find(i => i.id === p.id && i.size === size);
     if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: Zelo.primaryImage(p), size, qty: 1 });
@@ -301,9 +318,9 @@
     Zelo.openCartDrawer();
   }
   function handleBuyNow() {
-    const size = document.getElementById('pdp-size').value;
-    if (!size) { Zelo.showToast('Select a size', 'Choose a size before buying.'); return; }
     const p = window._currentProduct;
+    const size = resolveSize(p);
+    if (!size) { Zelo.showToast('Select a size', 'Choose a size before buying.'); return; }
     const cart = Zelo.getCart();
     const existing = cart.find(i => i.id === p.id && i.size === size);
     if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: Zelo.primaryImage(p), size, qty: 1 });
@@ -320,7 +337,8 @@
     try {
       const res = await Zelo.api.products();
       if (res.products && res.products.length) products = res.products;
-    } catch (e) { /* fall back silently — sample data still lets the page work */ }
+      else console.warn('[Zelo] /api/products responded but returned 0 products — using sample data.');
+    } catch (e) { console.error('[Zelo] /api/products request failed — using sample data. Reason:', e); }
 
     const p = products.find(x => x.id === pid) || products[0];
     if (!p) {
