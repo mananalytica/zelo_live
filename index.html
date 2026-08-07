@@ -212,7 +212,7 @@
     return `
       <div class="pcard" onclick="trackAndGo('${p.id}')">
         <div class="pimg-wrap">
-          <img src="${p.image}" loading="lazy">
+          <img src="${Zelo.primaryImage(p)}" loading="lazy">
           ${p.stock <= 3 ? '<span class="badge badge-red" style="position:absolute;top:8px;left:8px">Low Stock</span>' : ''}
         </div>
         <div class="pinfo">

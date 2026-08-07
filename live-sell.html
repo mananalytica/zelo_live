@@ -294,7 +294,7 @@ function addToCartCore(pid, size, qty) {
   const cart = Zelo.getCart();
   const existing = cart.find(i => i.id === pid && i.size === size);
   if (existing) existing.qty += (qty || 1);
-  else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: qty || 1 });
+  else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: Zelo.primaryImage(p), size, qty: qty || 1 });
   Zelo.setCart(cart);
   if (window.Zelo && Zelo.ecommerce) Zelo.ecommerce.addToCart({ id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), qty: qty || 1, size, category: p.category });
   return true;
@@ -437,7 +437,7 @@ function renderCurrentLot(p) {
   return `
     <div class="current-lot">
       <div class="lot-img" onclick="router.navigate('product','${p.id}')" style="cursor:pointer">
-        <img src="${p.image}">
+        <img src="${Zelo.primaryImage(p)}">
         <span class="badge badge-red" style="position:absolute;top:10px;left:10px">Only ${p.stock} Left</span>
       </div>
       <div style="padding:22px">
@@ -475,7 +475,7 @@ function renderLotCard(p) {
   return `
     <div class="lot-card card-interactive" onclick="router.navigate('product','${p.id}')">
       <div style="position:relative">
-        <img src="${p.image}" style="aspect-ratio:4/5;object-fit:cover;width:100%">
+        <img src="${Zelo.primaryImage(p)}" style="aspect-ratio:4/5;object-fit:cover;width:100%">
         <span class="badge ${p.stock<=3?'badge-red':'badge-black'}" style="position:absolute;top:8px;left:8px">${p.stock<=3?'Only '+p.stock+' left':'In Stock'}</span>
       </div>
       <div class="lot-body">
@@ -505,7 +505,7 @@ function renderProduct(root, id) {
   root.innerHTML = `
     <nav class="order-ref" style="margin-bottom:16px"><a href="#live" onclick="router.navigate('live')" style="color:var(--black);font-weight:700">Live Sell</a> / ${p.name}</nav>
     <div class="grid grid-2" style="align-items:start;background:transparent;gap:24px">
-      <div class="card card-flush" style="border-radius:0"><img src="${p.image}" style="aspect-ratio:1/1;object-fit:cover;width:100%"></div>
+      <div class="card card-flush" style="border-radius:0"><img src="${Zelo.primaryImage(p)}" style="aspect-ratio:1/1;object-fit:cover;width:100%"></div>
       <div>
         <div class="flex-between" style="margin-bottom:8px"><span class="badge badge-black">Zainab Export</span><span class="order-ref">SKU ${p.sku||p.id}</span></div>
         <h1 style="font-size:24px;text-transform:none">${p.name}</h1>
@@ -572,7 +572,7 @@ function renderUpload(root) {
       <div class="card" style="border-radius:0">
         <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
           <p style="margin:0;font-weight:700;color:var(--black);font-size:13px">Drag photos here, or click to browse</p>
-          <p style="margin:4px 0 0;font-size:11.5px">JPG or PNG, up to 5 photos (preview only — host the URL yourself and paste it below)</p>
+          <p style="margin:4px 0 0;font-size:11.5px">JPG or PNG, up to 5 photos (preview only — host the URLs yourself and paste them below, one per line)</p>
           <input type="file" id="file-input" multiple accept="image/*" style="display:none">
         </div>
         <div id="upload-preview" class="grid grid-3" style="margin-top:14px;background:transparent;gap:10px"></div>
@@ -580,7 +580,8 @@ function renderUpload(root) {
       <div class="card" style="border-radius:0">
         <div class="field"><label>Product Name</label><input type="text" id="up-name" class="input" placeholder="e.g. Export Overrun Wool Coat"></div>
         <div class="field"><label>SKU</label><input type="text" id="up-sku" class="input mono" placeholder="ZX-LEFT-0001"></div>
-        <div class="field"><label>Image URL</label><input type="text" id="up-image" class="input" placeholder="https://..."></div>
+        <div class="field"><label>Image URLs (one per line — first is the main photo)</label><textarea id="up-image" class="input mono" rows="4" placeholder="https://example.com/photo-1.jpg&#10;https://example.com/photo-2.jpg&#10;https://example.com/photo-3.jpg"></textarea></div>
+        <div id="up-image-preview" class="grid grid-4" style="margin:-4px 0 14px;background:transparent;gap:8px"></div>
         <div class="grid grid-2" style="background:transparent;gap:16px">
           <div class="field"><label>Price (Rs)</label><input type="number" id="up-price" class="input mono"></div>
           <div class="field"><label>Stock</label><input type="number" id="up-stock" class="input mono"></div>
@@ -600,6 +601,17 @@ function renderUpload(root) {
   ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove('active'); }));
   dz.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
   fileInput.addEventListener('change', e => handleFiles(e.target.files));
+  document.getElementById('up-image').addEventListener('input', renderImageUrlPreview);
+}
+function renderImageUrlPreview() {
+  const preview = document.getElementById('up-image-preview');
+  if (!preview) return;
+  const urls = document.getElementById('up-image').value.split('\n').map(s => s.trim()).filter(Boolean);
+  preview.innerHTML = urls.map((url, i) => `
+    <div style="position:relative">
+      <img src="${url}" style="aspect-ratio:1/1;object-fit:cover;width:100%;border:1px solid var(--line);background:var(--stone)" onerror="this.style.opacity=0.25">
+      ${i===0 ? '<span class="badge badge-black" style="position:absolute;top:4px;left:4px;font-size:9px">Main</span>' : ''}
+    </div>`).join('');
 }
 function handleFiles(files) {
   const preview = document.getElementById('upload-preview');
@@ -613,12 +625,13 @@ function handleFiles(files) {
 function saveProduct() {
   const name = document.getElementById('up-name').value.trim();
   if (!name) { Zelo.showToast('Missing name', 'Give the product a name first.'); return; }
+  const imageUrls = document.getElementById('up-image').value.split('\n').map(s => s.trim()).filter(Boolean);
   const payload = {
     name, sku: document.getElementById('up-sku').value || undefined,
     price: parseFloat(document.getElementById('up-price').value) || 0,
     original_price: (parseFloat(document.getElementById('up-price').value) || 0) * 1.6,
     stock: parseInt(document.getElementById('up-stock').value) || 1,
-    image: document.getElementById('up-image').value || 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=500&fit=crop&q=80',
+    image: imageUrls.length ? imageUrls.join('|') : 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&h=500&fit=crop&q=80',
     category: document.getElementById('up-category').value,
     sizes: ['Standard'],
     description: document.getElementById('up-desc').value

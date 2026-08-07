@@ -7,13 +7,32 @@
 <meta name="description" id="page-desc" content="Genuine export-leftover fashion from Zelo, sold with cash on delivery.">
 <link rel="canonical" id="page-canonical" href="">
 <link rel="icon" href="assets/logo-original-square.png">
+<script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
 <script src="datalayer.js"></script>
 <link rel="stylesheet" href="styles.css">
 <style>
   .pdp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
   @media (max-width: 800px) { .pdp-grid { grid-template-columns: 1fr; } }
-  .pdp-img { aspect-ratio: 1/1; background: var(--stone); overflow: hidden; }
-  .pdp-img img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Gallery: vertical thumbnail rail + large main image, built with the
+     site's own sharp-cornered, black/white design tokens. */
+  .pdp-gallery { display: flex; gap: 12px; }
+  .pdp-thumbs { display: flex; flex-direction: column; gap: 8px; width: 68px; flex-shrink: 0; max-height: 560px; overflow-y: auto; }
+  .pdp-thumb { aspect-ratio: 1/1; overflow: hidden; background: var(--stone); border: 1px solid var(--line); cursor: pointer; padding: 0; }
+  .pdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pdp-thumb.active { border: 2px solid var(--black); }
+  .pdp-img { position: relative; aspect-ratio: 1/1; background: var(--stone); overflow: hidden; flex: 1; min-width: 0; }
+  .pdp-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pdp-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; background: #fff; border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .pdp-nav-btn:hover { background: var(--black); color: #fff; border-color: var(--black); }
+  .pdp-nav-prev { left: 10px; }
+  .pdp-nav-next { right: 10px; }
+  .pdp-img-count { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.72); color: #fff; font-family: var(--font-mono); font-size: 11px; padding: 4px 8px; letter-spacing: 0.03em; }
+  @media (max-width: 800px) {
+    .pdp-gallery { flex-direction: column-reverse; }
+    .pdp-thumbs { flex-direction: row; width: 100%; max-height: none; overflow-x: auto; overflow-y: visible; }
+    .pdp-thumb { width: 60px; flex-shrink: 0; }
+  }
 </style>
 </head>
 <body>
@@ -35,12 +54,12 @@
   /* Same fallback dataset used on the homepage and Live Sell, so
      product IDs line up wherever the shopper clicked in from. */
   const FALLBACK_PRODUCTS = [
-  { id:'u53', name:'Karandi Floral Print Unstitched 3-Piece — Olive', price:4550, original_price:8300, stock:35, image:'https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?w=600&h=750&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0053', sizes:['Unstitched'], description:'Export-leftover karandi fabric, floral print, cut as a complete 3-piece suit in olive. Genuine surplus yardage held back after the export order was finalised.', material:'Karandi · Floral Print', origin:'Pakistan — Export Leftover' },
+  { id:'u53', name:'Karandi Floral Print Unstitched 3-Piece — Olive', price:4550, original_price:8300, stock:35, image:'https://images.unsplash.com/photo-1618932260643-eee4a2f652a6?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=900&h=1100&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0053', sizes:['Unstitched'], description:'Export-leftover karandi fabric, floral print, cut as a complete 3-piece suit in olive. Genuine surplus yardage held back after the export order was finalised.', material:'Karandi · Floral Print', origin:'Pakistan — Export Leftover' },
   { id:'l35', name:'Tassel Lace — 6 inch — Teal', price:550, original_price:810, stock:39, image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=750&fit=crop&q=80', category:'lace', sku:'ZX-LACE-0095', sizes:['1 Meter','5 Meter','10 Meter'], description:'Genuine export-surplus tassel lace, 6 inch width, in teal. Sold by the metre — ideal for finishing necklines, hems, and dupattas.', material:'Tassel Lace', origin:'Pakistan — Export Leftover' },
   { id:'l32', name:'Velvet Border Lace — 1.5 inch — Mauve', price:900, original_price:1410, stock:12, image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=750&fit=crop&q=80', category:'lace', sku:'ZX-LACE-0092', sizes:['1 Meter','5 Meter','10 Meter'], description:'Genuine export-surplus velvet border lace, 1.5 inch width, in mauve. Sold by the metre — ideal for finishing necklines, hems, and dupattas.', material:'Velvet Border Lace', origin:'Pakistan — Export Leftover' },
-  { id:'u56', name:'Karandi Self-Print Unstitched 3-Piece — Coral', price:3850, original_price:6450, stock:21, image:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600&h=750&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0056', sizes:['Unstitched'], description:'Export-leftover karandi fabric, self-print, cut as a complete 3-piece suit in coral. Genuine surplus yardage held back after the export order was finalised.', material:'Karandi · Self-Print', origin:'Pakistan — Export Leftover' },
+  { id:'u56', name:'Karandi Self-Print Unstitched 3-Piece — Coral', price:3850, original_price:6450, stock:21, image:'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=900&h=1100&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0056', sizes:['Unstitched'], description:'Export-leftover karandi fabric, self-print, cut as a complete 3-piece suit in coral. Genuine surplus yardage held back after the export order was finalised.', material:'Karandi · Self-Print', origin:'Pakistan — Export Leftover' },
   { id:'l28', name:'Crochet Lace — 1 inch — Turquoise', price:850, original_price:1220, stock:69, image:'https://images.unsplash.com/photo-1607083681678-f8492ab959a6?w=600&h=750&fit=crop&q=80', category:'lace', sku:'ZX-LACE-0088', sizes:['1 Meter','5 Meter','10 Meter'], description:'Genuine export-surplus crochet lace, 1 inch width, in turquoise. Sold by the metre — ideal for finishing necklines, hems, and dupattas.', material:'Crochet Lace', origin:'Pakistan — Export Leftover' },
-  { id:'u50', name:'Chiffon Geometric Print Unstitched 3-Piece — Wine', price:3250, original_price:5050, stock:45, image:'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=600&h=750&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0050', sizes:['Unstitched'], description:'Export-leftover chiffon fabric, geometric print, cut as a complete 3-piece suit in wine. Genuine surplus yardage held back after the export order was finalised.', material:'Chiffon · Geometric Print', origin:'Pakistan — Export Leftover' },
+  { id:'u50', name:'Chiffon Geometric Print Unstitched 3-Piece — Wine', price:3250, original_price:5050, stock:45, image:'https://images.unsplash.com/photo-1591369822096-ffd140ec948f?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&h=1100&fit=crop&q=80|https://images.unsplash.com/photo-1517841905240-472988babdf9?w=900&h=1100&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0050', sizes:['Unstitched'], description:'Export-leftover chiffon fabric, geometric print, cut as a complete 3-piece suit in wine. Genuine surplus yardage held back after the export order was finalised.', material:'Chiffon · Geometric Print', origin:'Pakistan — Export Leftover' },
   { id:'u47', name:'Viscose Block Print Unstitched 2-Piece — Mustard Yellow', price:4050, original_price:7850, stock:29, image:'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&h=750&fit=crop&q=80', category:'unstitched', sku:'ZX-UNS-0047', sizes:['Unstitched'], description:'Export-leftover viscose fabric, block print, cut as a complete 2-piece suit in mustard yellow. Genuine surplus yardage held back after the export order was finalised.', material:'Viscose · Block Print', origin:'Pakistan — Export Leftover' },
   { id:'l24', name:'Tissue Lace — 4 inch — Emerald Green', price:700, original_price:1130, stock:57, image:'https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&h=750&fit=crop&q=80', category:'lace', sku:'ZX-LACE-0084', sizes:['1 Meter','5 Meter','10 Meter'], description:'Genuine export-surplus tissue lace, 4 inch width, in emerald green. Sold by the metre — ideal for finishing necklines, hems, and dupattas.', material:'Tissue Lace', origin:'Pakistan — Export Leftover' },
   { id:'l29', name:'Chikankari Lace — 6 inch — Lavender', price:650, original_price:850, stock:51, image:'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?w=600&h=750&fit=crop&q=80', category:'lace', sku:'ZX-LACE-0089', sizes:['1 Meter','5 Meter','10 Meter'], description:'Genuine export-surplus chikankari lace, 6 inch width, in lavender. Sold by the metre — ideal for finishing necklines, hems, and dupattas.', material:'Chikankari Lace', origin:'Pakistan — Export Leftover' },
@@ -150,7 +169,7 @@
       "@context": "https://schema.org/",
       "@type": "Product",
       "name": p.name,
-      "image": [p.image],
+      "image": Zelo.productImages(p),
       "description": p.description || p.name,
       "sku": p.sku || p.id,
       "brand": { "@type": "Brand", "name": "Zainab Export" },
@@ -171,7 +190,7 @@
     const pct = orig > price ? Math.round((1 - price / orig) * 100) : 0;
     return `
       <div class="pcard" onclick="window.location.href='product.html?id=${p.id}'">
-        <div class="pimg-wrap"><img src="${p.image}" loading="lazy"></div>
+        <div class="pimg-wrap"><img src="${Zelo.primaryImage(p)}" loading="lazy"></div>
         <div class="pinfo">
           <div class="pbrand">Zainab Export</div>
           <div class="pname">${p.name}</div>
@@ -192,9 +211,23 @@
     const inStock = p.stock > 0;
     const sizes = p.sizes && p.sizes.length ? p.sizes : ['Standard'];
 
+    const images = Zelo.productImages(p);
+
     document.getElementById('product-mount').innerHTML = `
       <div class="pdp-grid">
-        <div class="pdp-img"><img src="${p.image}" alt="${p.name}"></div>
+        <div class="pdp-gallery">
+          <div class="pdp-thumbs" id="pdp-thumbs">
+            ${images.map((img, i) => `<button class="pdp-thumb ${i===0?'active':''}" data-idx="${i}" onclick="setMainImage(${i})" aria-label="View photo ${i+1}"><img src="${img}" loading="lazy"></button>`).join('')}
+          </div>
+          <div class="pdp-img" id="pdp-main-img">
+            <img id="pdp-main-image-el" src="${images[0] || ''}" alt="${p.name}">
+            ${images.length > 1 ? `
+              <button class="pdp-nav-btn pdp-nav-prev" onclick="stepImage(-1)" aria-label="Previous photo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+              <button class="pdp-nav-btn pdp-nav-next" onclick="stepImage(1)" aria-label="Next photo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+              <span class="pdp-img-count" id="pdp-img-count">1 / ${images.length}</span>
+            ` : ''}
+          </div>
+        </div>
         <div>
           <div class="flex-between" style="margin-bottom:8px">
             <span class="badge badge-black">Zainab Export</span>
@@ -231,6 +264,8 @@
     `;
 
     window._currentProduct = p;
+    window._currentImages = images;
+    window._currentImageIdx = 0;
 
     Zelo.ecommerce.viewItem(p);
 
@@ -243,13 +278,24 @@
     }
   }
 
+  function setMainImage(idx) {
+    const images = window._currentImages || [];
+    if (!images.length) return;
+    window._currentImageIdx = ((idx % images.length) + images.length) % images.length;
+    document.getElementById('pdp-main-image-el').src = images[window._currentImageIdx];
+    document.querySelectorAll('.pdp-thumb').forEach((t, i) => t.classList.toggle('active', i === window._currentImageIdx));
+    const countEl = document.getElementById('pdp-img-count');
+    if (countEl) countEl.textContent = `${window._currentImageIdx + 1} / ${images.length}`;
+  }
+  function stepImage(delta) { setMainImage((window._currentImageIdx || 0) + delta); }
+
   function handleAddToCart() {
     const size = document.getElementById('pdp-size').value;
     if (!size) { Zelo.showToast('Select a size', 'Choose a size before adding to cart.'); return; }
     const p = window._currentProduct;
     const cart = Zelo.getCart();
     const existing = cart.find(i => i.id === p.id && i.size === size);
-    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: 1 });
+    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: Zelo.primaryImage(p), size, qty: 1 });
     Zelo.setCart(cart);
     Zelo.ecommerce.addToCart({ id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), qty: 1, size, category: p.category });
     Zelo.openCartDrawer();
@@ -260,13 +306,14 @@
     const p = window._currentProduct;
     const cart = Zelo.getCart();
     const existing = cart.find(i => i.id === p.id && i.size === size);
-    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: p.image, size, qty: 1 });
+    if (existing) existing.qty += 1; else cart.push({ id: p.id, name: p.name, price: priceOf(p), img: Zelo.primaryImage(p), size, qty: 1 });
     Zelo.setCart(cart);
     Zelo.ecommerce.addToCart({ id: p.id, sku: p.sku || p.id, name: p.name, price: priceOf(p), qty: 1, size, category: p.category });
     window.location.href = 'checkout.html';
   }
 
   (async function init() {
+    window.scrollTo(0, 0);
     const params = new URLSearchParams(window.location.search);
     const pid = params.get('id');
     let products = FALLBACK_PRODUCTS;
@@ -281,6 +328,7 @@
       return;
     }
     renderProduct(p, products);
+    requestAnimationFrame(() => window.scrollTo(0, 0));
   })();
 </script>
 </body>

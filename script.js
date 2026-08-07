@@ -377,7 +377,27 @@
     }
   };
 
-  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api, ecommerce, FREE_SHIPPING_THRESHOLD, freeShippingBarHTML };
+  /* Multi-image support: a product can carry either an `images` array,
+     or a single `image` field with multiple URLs pipe-separated
+     ("url1|url2|url3") — this keeps the existing single-column `image`
+     field in the API/DB working with no backend changes needed.
+     Anywhere a single thumbnail is needed, use primaryImage(p).
+     Anywhere the full gallery is needed (product detail page), use
+     productImages(p). */
+  function primaryImage(p) {
+    if (!p) return '';
+    if (Array.isArray(p.images) && p.images.length) return p.images[0];
+    if (typeof p.image === 'string' && p.image.includes('|')) return p.image.split('|')[0].trim();
+    return p.image || '';
+  }
+  function productImages(p) {
+    if (!p) return [];
+    if (Array.isArray(p.images) && p.images.length) return p.images.filter(Boolean);
+    if (typeof p.image === 'string' && p.image.includes('|')) return p.image.split('|').map(s => s.trim()).filter(Boolean);
+    return p.image ? [p.image] : [];
+  }
+
+  window.Zelo = { showToast, getCart, setCart, updateCartBadge, openCartDrawer, closeCartDrawer, getUser, setUser, clearUser, getAdminKey, setAdminKey, api, ecommerce, FREE_SHIPPING_THRESHOLD, freeShippingBarHTML, primaryImage, productImages };
 
   document.addEventListener('DOMContentLoaded', injectChrome);
 })();
